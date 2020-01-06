@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.daniel</groupId>
+  <artifactId>util</artifactId>
+  <version>0.0.1</version>
+  <packaging>jar</packaging>
+
+  <name>util</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+<!--     <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+    <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version> -->
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>28.1-jre</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- 配置远程发布到私服，mvn deploy -->
+  <distributionManagement>
+    <repository>  
+      <id>releases</id>  
+      <name>Nexus Release Repository</name>  
+      <url>file:///D:/Workspace/.repo/maven/.m2/</url>  
+    </repository>  
+    <snapshotRepository>  
+      <id>snapshots</id>  
+      <name>Nexus Snapshot Repository</name>  
+      <url>file:///D:/Workspace/.repo/maven/.m2/</url>  
+    </snapshotRepository>
+  </distributionManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+            </execution>
+          </executions>
+        </plugin>
+    </plugins>
+  </build>
+</project>
