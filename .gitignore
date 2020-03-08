@@ -22,6 +22,10 @@ local.properties
 /`eclipse/*/target
 # /`eclipse/*/src/test
 
+## idea ignore
+/`idea/*/.idea
+/`idea/*/target
+
 # External tool builders
 .externalToolBuilders/
 

@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -22,10 +23,12 @@ import java.util.stream.Collectors;
  */
 public class PojoUtil {
 
-  // [start]* ################################ 解析: 基础方法 ################################ */
+  // region ################################ 解析: 基础方法 ################################
+
+
 
   /**获取字段getter/setter方法
-   * @param pojo
+   * @param pojoClz
    * @param fieldName
    * @return
    */
@@ -41,7 +44,7 @@ public class PojoUtil {
     return fieldProp;
   }
   // * ################################ getProps ################################ */
-  
+
   /**获取 props 方法, 滤去相应修饰符字段
    * @param pojoClz
    * @param modifier
@@ -50,7 +53,12 @@ public class PojoUtil {
   private static List<PropertyDescriptor> getProps(Class<?> pojoClz, int modifier) {
     // 字段全集
     pojoClz.getDeclaredFields();
-    Field[] fields = pojoClz.getDeclaredFields();
+    List<Field> fields = new ArrayList<Field>();
+    // 迭代查找包括父类的所有字段
+    for (Class<?> clz = pojoClz; !clz.isInstance(Object.class); clz = clz.getSuperclass()) {
+      Collections.addAll(fields, clz.getDeclaredFields());
+    }
+    // 依据字段依次获取prop方法
     List<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>();
     for (Field field : fields) {
       // 若符合修饰符过滤, 跳过字段
@@ -63,7 +71,7 @@ public class PojoUtil {
     }
     return props;
   }
-  
+
   /**获取 props 方法, 滤去 STATIC | FINAL 字段
    * @param pojoClz
    * @return
@@ -71,7 +79,7 @@ public class PojoUtil {
   public static List<PropertyDescriptor> getProps(Class<?> pojoClz) {
     return getProps(pojoClz, Modifier.STATIC | Modifier.FINAL);
   }
-  
+
   /**获取 props 方法, 由过滤字段获得
    * @param pojoClz
    * @param filters
@@ -86,7 +94,7 @@ public class PojoUtil {
     }
     return props;
   }
-  
+
   /**获取 props 方法
    * @param filters
    * @param pojoClz
@@ -95,9 +103,10 @@ public class PojoUtil {
   public static List<PropertyDescriptor> getProps(Class<?> pojoClz, String... filters) {
     return getProps(pojoClz, Arrays.asList(filters));
   }
-  
+
+
   // * ################################ getPropMap ################################ */
-  
+
   /**获取 field -> prop 方法, 滤去相应类型字段
    * @param pojoClz
    * @param modifier
@@ -106,7 +115,12 @@ public class PojoUtil {
   private static Map<String, PropertyDescriptor> getPropMap(Class<?> pojoClz, int modifier) {
     // 字段全集
     pojoClz.getDeclaredFields();
-    Field[] fields = pojoClz.getDeclaredFields();
+    List<Field> fields = new ArrayList<Field>();
+    // 迭代查找包括父类的所有字段
+    for (Class<?> clz = pojoClz; !clz.isInstance(Object.class); clz = clz.getSuperclass()) {
+      Collections.addAll(fields, clz.getDeclaredFields());
+    }
+    // 依据字段依次获取prop方法
     Map<String, PropertyDescriptor> fieldProps = new LinkedHashMap<String, PropertyDescriptor>();
     for (Field field : fields) {
       // 若符合修饰符过滤, 跳过字段
@@ -119,9 +133,8 @@ public class PojoUtil {
     }
     return fieldProps;
   }
-  
+
   /**获取 field -> prop 方法, 滤去 STATIC | FINAL 字段
-   * @param fieldName
    * @param pojoClz
    * @return
    */
@@ -145,7 +158,7 @@ public class PojoUtil {
   }
 
   // * ################################ getter/setter ################################ */
-  
+
   public static <T> T getter(Object pojo, PropertyDescriptor prop) {
     try {
       return (T) prop.getReadMethod().invoke(pojo);
@@ -172,10 +185,10 @@ public class PojoUtil {
   public static void setter(Object pojo, String fieldName, Object val) {
     setter(pojo, getProp(pojo.getClass(), fieldName), val);
   }
-  
-  // [end]
 
-  // [start]* ################################ 切割: 按列选取 ################################ */
+  // endregion
+
+  // region ################################ 切割: 按列选取 ################################
 
   public static <R> List<R> getFields(List<?> pojos, String fieldName) {
     // 空数组
@@ -212,9 +225,9 @@ public class PojoUtil {
     return fields;
   }
 
-  // [end]
+  // endregion
 
-  // [start]* ################################ 构建/映射: 对象与 Map 的转换 ################################ */
+  // region ################################ 构建/映射: 对象与 Map 的转换 ################################
 
   /**解析 map 到对象 (提供 props 以提高效率)
    * @param <T>
@@ -336,7 +349,6 @@ public class PojoUtil {
   /**映射对象 到 map
    * @param <T>
    * @param pojo
-   * @param props
    * @return
    */
   public static <T> Map<String, Object> mapify(T pojo) {
@@ -347,7 +359,7 @@ public class PojoUtil {
   public static <T> List<Map<String, Object>> mapifys(List<T> pojos) {
     List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
     // 空数组检验
-    if(pojos.size()==0) {
+    if (pojos.size() == 0) {
       return maps;
     }
     List<PropertyDescriptor> props = getProps(pojos.get(0).getClass());
@@ -357,9 +369,9 @@ public class PojoUtil {
     return maps;
   }
 
-  // [end]
+  // endregion
 
-  // [start]* ################################ 转换: 不同对象间的字段复制 ################################ */
+  // region ################################ 转换: 不同对象间的字段复制  ################################
 
   /**將 source 中的字段复制到 target, 提供属性字段
    * @param source
@@ -370,7 +382,7 @@ public class PojoUtil {
    * @param withNull
    */
   private static void copy(Object source, Object target, Map<String, PropertyDescriptor> srcProps,
-      Map<String, PropertyDescriptor> tarProps, Collection<String> filters, Boolean withNull) {
+                           Map<String, PropertyDescriptor> tarProps, Collection<String> filters, Boolean withNull) {
     for (String field : filters) {
       // 若过滤字段属于来源字段, 拷贝
       if (srcProps.containsKey(field)) {
@@ -391,7 +403,7 @@ public class PojoUtil {
    * @param withNull
    */
   private static void copy(Object source, Object target, Map<String, PropertyDescriptor> srcProps,
-      Map<String, PropertyDescriptor> tarProps, Boolean withNull) {
+                           Map<String, PropertyDescriptor> tarProps, Boolean withNull) {
     for (Iterator<String> iterator = srcProps.keySet().iterator(); iterator.hasNext();) {
       String field = iterator.next();
       Object srcVal = getter(source, srcProps.get(field));
@@ -452,7 +464,7 @@ public class PojoUtil {
    * @return
    */
   public static <S, C> List<S> searchByAnchor(String anchorKey, List<S> sources, List<C> cites,
-      Collection<String> filters) {
+                                              Collection<String> filters) {
     // 检查空数组
     if (sources.size() == 0 || cites.size() == 0) {
       return sources;
@@ -478,32 +490,32 @@ public class PojoUtil {
     return sources;
   }
 
-  // [end]
+  // endregion
 
   /*
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   *  
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
    */
 
 }

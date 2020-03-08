@@ -1,5 +1,7 @@
 package com.daniel.util.space;
 
+import com.daniel.util.json.PojoUtil;
+
 import java.beans.PropertyDescriptor;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,26 +11,26 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.daniel.util.json.PojoUtil;
-
-/**数据空间集操作类
- * @author Daniel
+/**
+ * 数据空间集操作类
  *
+ * @author Daniel
  */
 public class DataSpace {
 
-  // [start]* ################################ 创建数据空间集 ################################ */
-
-  /**递归子函数: 创建构建空间集的基底向量组
+  // region ################################ 创建数据空间集 ################################
+  /**
+   * 递归子函数: 创建构建空间集的基底向量组
+   *
    * @param <T>
    * @param <R>
    * @param current_basisGroup 基底向量组
    * @param clz
-   * @param rest_bases 剩余基底向量
+   * @param rest_bases         剩余基底向量
    * @return
    */
   private static <T, R> Collector<T, ?, ?> basisGroup(Collector<T, ?, ?> current_basisGroup, Class<T> clz,
-      Function<? super T, ? extends R>... rest_bases) {
+                                                      Function<? super T, ? extends R>... rest_bases) {
     // 递归终点
     if (rest_bases.length == 0) {
       return current_basisGroup;
@@ -42,9 +44,11 @@ public class DataSpace {
     return basisGroup(basisGroup, clz, restBasisArr);
   }
 
-  /**创建构建空间集的基底向量组
-   * @param <T> 数据空间集类型
-   * @param clz 类性
+  /**
+   * 创建构建空间集的基底向量组
+   *
+   * @param <T>   数据空间集类型
+   * @param clz   类性
    * @param bases 基底向量
    * @return
    */
@@ -57,7 +61,9 @@ public class DataSpace {
     return basisGroup(null, clz, bases);
   }
 
-  /**向量化 pojos, 将其映射到向量空间
+  /**
+   * 向量化 pojos, 将其映射到向量空间
+   *
    * @param <T>
    * @param pojos
    * @param bases 基底向量
@@ -72,7 +78,9 @@ public class DataSpace {
     return pojos.stream().collect(dimCollectors);
   }
 
-  /**向量化 pojos, 将其映射到向量空间
+  /**
+   * 向量化 pojos, 将其映射到向量空间
+   *
    * @param <T>
    * @param pojos
    * @param basisFields 基底向量字段名
@@ -93,7 +101,9 @@ public class DataSpace {
     return vectorify(pojos, bases);
   }
 
-  /**向量化 pojos, 将其映射到向量空间
+  /**
+   * 向量化 pojos, 将其映射到向量空间
+   *
    * @param <T>
    * @param pojos
    * @param basisFields 基底向量字段名
@@ -103,10 +113,13 @@ public class DataSpace {
     return vectorify(pojos, Arrays.asList(basisFields));
   }
 
-  // [end]
+  // endregion
 
-  // [start]* ################################ 数据空间集降维 ################################ */
+  // region ################################ 数据空间集降维 ################################
 
-  // [end]
+
+  // endregion
+
+
 
 }

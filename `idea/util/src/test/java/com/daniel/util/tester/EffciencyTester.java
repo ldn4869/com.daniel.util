@@ -1,20 +1,19 @@
 package com.daniel.util.tester;
 
+import com.daniel.util.debug.TimeKeeper;
+import com.daniel.util.entity.Complex;
+import com.daniel.util.entity.Student;
+import com.daniel.util.json.PojoUtil;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.daniel.util.debug.TimeKeeper;
-import com.daniel.util.entity.Complex;
-import com.daniel.util.entity.Student;
-import com.daniel.util.json.PojoUtil;
-
 public class EffciencyTester {
 
-  // [start]* ################################ 调用方法 ################################ */
+  // region ################################ 调用方法 ################################
   @SuppressWarnings("unused")
   private static List<Map<String, Object>> genStuMaps(int count) {
     List<Map<String, Object>> stuMaps = new ArrayList<Map<String, Object>>();
@@ -282,7 +281,8 @@ public class EffciencyTester {
     return pojos;
   }
 
-  // [end]
+
+  // endregion
 
 //  @Test
   public void test1() throws Exception {
