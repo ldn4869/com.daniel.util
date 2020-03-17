@@ -1,4 +1,22 @@
 ## Eclipse ignore
+/'eclipse/*/.classpath
+/'eclipse/*/.launch
+/'eclipse/*/.project
+/'eclipse/*/.settings
+/'eclipse/*/*.launch
+/'eclipse/*/*.tmproj
+/'eclipse/*/ivy*
+/'eclipse/*/eclipse
+/'eclipse/*/target
+/*/.classpath
+/*/.launch
+/*/.project
+/*/.settings
+/*/*.launch
+/*/*.tmproj
+/*/ivy*
+/*/eclipse
+/*/target
 
 .metadata
 bin/
@@ -11,20 +29,15 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-/`eclipse/*/.classpath
-/`eclipse/*/.launch
-/`eclipse/*/.project
-/`eclipse/*/.settings
-/`eclipse/*/*.launch
-/`eclipse/*/*.tmproj
-/`eclipse/*/ivy*
-/`eclipse/*/eclipse
-/`eclipse/*/target
-# /`eclipse/*/src/test
 
 ## idea ignore
-/`idea/*/.idea
-/`idea/*/target
+/'idea/*/.idea
+/'idea/*/target
+/*/.idea
+/*/target
+
+## Others
+/'general
 
 # External tool builders
 .externalToolBuilders/

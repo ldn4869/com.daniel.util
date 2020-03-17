@@ -2,14 +2,13 @@ package com.daniel.util.tester;
 
 import com.daniel.util.debug.TimeKeeper;
 import com.daniel.util.entity.Complex;
+import com.daniel.util.entity.Person;
 import com.daniel.util.entity.Student;
+import com.daniel.util.entity.StudentVo;
 import com.daniel.util.json.PojoUtil;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EffciencyTester {
 
@@ -281,6 +280,20 @@ public class EffciencyTester {
     return pojos;
   }
 
+  public static void overload(Person person){
+    System.out.println("Person");
+  }
+
+  public static void overload(Student student){
+    System.out.println("Student");
+  }
+
+
+
+
+  public static void overload(Object object){
+    System.out.println("Object");
+  }
 
   // endregion
 
@@ -334,11 +347,19 @@ public class EffciencyTester {
     System.out.println(stus2.subList(0, 2));
   }
   
-  @Test
+//  @Test
   public void test5() throws Exception {
-
+    Student stu = genStus(1).get(0);
+    Class<StudentVo> pojoClz = StudentVo.class;
+    PojoUtil.copy(stu, pojoClz);
     return;
   }
-  
+
+  @Test
+  public void test6() throws Exception {
+    Person person = new Student();
+    overload(person);
+    return;
+  }
 
 }

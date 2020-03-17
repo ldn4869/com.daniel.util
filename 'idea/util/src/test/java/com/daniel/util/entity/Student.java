@@ -1,6 +1,6 @@
 package com.daniel.util.entity;
 
-public class Student {
+public class Student implements Person {
   
   private String name;
   private int age;
