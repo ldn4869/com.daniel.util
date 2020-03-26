@@ -33,8 +33,10 @@ local.properties
 ## idea ignore
 /'idea/*/.idea
 /'idea/*/target
+/'idea/*/*.iml
 /*/.idea
 /*/target
+/*/*.iml
 
 ## Others
 /'general
