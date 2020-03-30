@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class DataSpace {
 
   // region ################################ 创建数据空间集 ################################
+
   /**
    * 递归子函数: 创建构建空间集的基底向量组
    *
@@ -119,7 +120,6 @@ public class DataSpace {
 
 
   // endregion
-
 
 
 }

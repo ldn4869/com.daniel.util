@@ -29,12 +29,12 @@ public class ObjectPersist {
   }
 
   /**读取持久化对象
-   * @param <T>
-   * @param file
+   * @param fileInputStream
    * @return
+   * @param <T>
    */
-  public static <T> T readObject(File file) {
-    try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file))) {
+  public static <T> T readObject(FileInputStream fileInputStream) {
+    try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
       return (T) objectInputStream.readObject();
     } catch (IOException | ClassNotFoundException e) {
       // TODO Auto-generated catch block

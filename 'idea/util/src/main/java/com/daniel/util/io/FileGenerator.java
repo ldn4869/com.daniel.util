@@ -5,20 +5,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.daniel.util.exception.io.FileAlreadyExistsRuntimeException;
-
-/**文件生成
- * @author Daniel
+/**
+ * 文件生成
  *
+ * @author Daniel
  */
 public class FileGenerator {
 
   private static final String CREATE = "CREATE";
   private static final String COVER = "COVER";
   private static final String APPEND = "APPEND";
-  
-  // [start]* ################################ 创建 ################################ */
-  /**创建文件夹路径
+
+  // region ################################ 创建 ################################
+
+  /**
+   * 创建文件夹路径
+   *
    * @param folder
    */
   public static void mkdir(File folder) {
@@ -27,7 +29,9 @@ public class FileGenerator {
     }
   }
 
-  /**不覆盖创建文件
+  /**
+   * 不覆盖创建文件
+   *
    * @param file
    */
   public static void create(File file) {
@@ -43,12 +47,15 @@ public class FileGenerator {
       }
     }
   }
-  // [end]
+  // endregion
 
-  // [start]* ################################ 写入 ################################ */
-  /**写入文件
-   * @param file 文件
-   * @param mode 写入模式
+  // region ################################ 写入 ################################
+
+  /**
+   * 写入文件
+   *
+   * @param file    文件
+   * @param mode    写入模式
    * @param content 写入内容
    */
   private static void write(File file, String mode, String content) {
@@ -87,47 +94,59 @@ public class FileGenerator {
     }
   }
 
-  /**不覆盖创建文件, 并写入内容
+  /**
+   * 不覆盖创建文件, 并写入内容
+   *
    * @param file
    * @param content
    */
   public static void create(File file, String content) {
     write(file, CREATE, content);
   }
-  
-  /**覆盖创建文件, 并写入内容
+
+  /**
+   * 覆盖创建文件, 并写入内容
+   *
    * @param file
    * @param content
    */
   public static void cover(File file, String content) {
     write(file, COVER, content);
   }
-  
-  /**文件不存在时, 创建并写入内容; 文件存在时, 在后追加内容
+
+  /**
+   * 文件不存在时, 创建并写入内容; 文件存在时, 在后追加内容
+   *
    * @param file
    * @param content
    */
   public static void append(File file, String content) {
     write(file, APPEND, content);
   }
-  
-  /**不覆盖创建文件, 并写入内容
+
+  /**
+   * 不覆盖创建文件, 并写入内容
+   *
    * @param fileName
    * @param content
    */
   public static void create(String fileName, String content) {
     write(new File(fileName), CREATE, content);
   }
-  
-  /**覆盖创建文件, 并写入内容
+
+  /**
+   * 覆盖创建文件, 并写入内容
+   *
    * @param fileName
    * @param content
    */
   public static void cover(String fileName, String content) {
     write(new File(fileName), COVER, content);
   }
-  
-  /**文件不存在时, 创建并写入内容; 文件存在时, 在后追加内容
+
+  /**
+   * 文件不存在时, 创建并写入内容; 文件存在时, 在后追加内容
+   *
    * @param fileName
    * @param content
    */
@@ -135,6 +154,6 @@ public class FileGenerator {
     write(new File(fileName), APPEND, content);
   }
 
-  // [end]
+  // endregion
 
 }
