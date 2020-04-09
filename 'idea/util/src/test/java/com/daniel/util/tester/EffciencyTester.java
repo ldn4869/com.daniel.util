@@ -361,5 +361,12 @@ public class EffciencyTester {
     overload(person);
     return;
   }
+  
+  @Test
+  public void test7() throws Exception {
+    Student stu = genStus(1).get(0);
+    StudentVo stuVo = PojoUtil.copy(stu, StudentVo.class);
+    return;
+  }
 
 }

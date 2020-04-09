@@ -5,15 +5,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,10 +15,10 @@ import java.util.stream.Collectors;
  * @author Daniel
  */
 public class PojoUtil {
-
+  
   // region ################################ 解析: 基础方法 ################################
-
-
+  
+  
   /**
    * 获取字段getter/setter方法
    *
@@ -46,7 +38,7 @@ public class PojoUtil {
     return fieldProp;
   }
   // * ################################ getProps ################################ */
-
+  
   /**
    * 获取 props 方法, 滤去相应修饰符字段
    *
@@ -75,7 +67,7 @@ public class PojoUtil {
     }
     return props;
   }
-
+  
   /**
    * 获取 props 方法, 滤去 STATIC | FINAL 字段
    *
@@ -85,7 +77,7 @@ public class PojoUtil {
   public static List<PropertyDescriptor> getProps(Class<?> pojoClz) {
     return getProps(pojoClz, Modifier.STATIC | Modifier.FINAL);
   }
-
+  
   /**
    * 获取 props 方法, 由过滤字段获得
    *
@@ -102,7 +94,7 @@ public class PojoUtil {
     }
     return props;
   }
-
+  
   /**
    * 获取 props 方法
    *
@@ -113,10 +105,10 @@ public class PojoUtil {
   public static List<PropertyDescriptor> getProps(Class<?> pojoClz, String... filters) {
     return getProps(pojoClz, Arrays.asList(filters));
   }
-
-
+  
+  
   // * ################################ getPropMap ################################ */
-
+  
   /**
    * 获取 field -> prop 方法, 滤去相应类型字段
    *
@@ -145,7 +137,7 @@ public class PojoUtil {
     }
     return fieldProps;
   }
-
+  
   /**
    * 获取 field -> prop 方法, 滤去 STATIC | FINAL 字段
    *
@@ -155,7 +147,7 @@ public class PojoUtil {
   public static Map<String, PropertyDescriptor> getPropMap(Class<?> pojoClz) {
     return getPropMap(pojoClz, Modifier.STATIC | Modifier.FINAL);
   }
-
+  
   /**
    * 获取 filters: field -> prop 方法
    *
@@ -172,9 +164,9 @@ public class PojoUtil {
     }
     return props;
   }
-
+  
   // * ################################ getter/setter ################################ */
-
+  
   public static <T> T getter(Object pojo, PropertyDescriptor prop) {
     try {
       return (T) prop.getReadMethod().invoke(pojo);
@@ -184,11 +176,11 @@ public class PojoUtil {
     }
     return null;
   }
-
+  
   public static <T> T getter(Object pojo, String fieldName) {
     return getter(pojo, getProp(pojo.getClass(), fieldName));
   }
-
+  
   public static void setter(Object pojo, PropertyDescriptor prop, Object val) {
     try {
       prop.getWriteMethod().invoke(pojo, val);
@@ -197,15 +189,15 @@ public class PojoUtil {
       e.printStackTrace();
     }
   }
-
+  
   public static void setter(Object pojo, String fieldName, Object val) {
     setter(pojo, getProp(pojo.getClass(), fieldName), val);
   }
-
+  
   // endregion
-
+  
   // region ################################ 切割: 按列选取 ################################
-
+  
   public static <R> List<R> getFields(List<?> pojos, String fieldName) {
     // 空数组
     if (pojos.size() == 0)
@@ -220,12 +212,12 @@ public class PojoUtil {
     }
     return fields;
   }
-
+  
   public static <T, R> List<R> getFields(List<T> pojos, Function<? super T, R> getter) {
     List<R> fields = pojos.stream().map(getter).collect(Collectors.toList());
     return fields;
   }
-
+  
   public static <R, T> Map<R, T> getFieldMap(List<T> pojos, String fieldName) {
     // 空数组
     if (pojos.size() == 0)
@@ -240,11 +232,11 @@ public class PojoUtil {
     }
     return fields;
   }
-
+  
   // endregion
-
+  
   // region ################################ 构建/映射: 对象与 Map 的转换 ################################
-
+  
   /**
    * 解析 map 到对象 (提供 props 以提高效率)
    *
@@ -269,7 +261,7 @@ public class PojoUtil {
     }
     return (T) pojo;
   }
-
+  
   /**
    * 解析 map 到对象
    *
@@ -292,7 +284,7 @@ public class PojoUtil {
     }
     return pojo;
   }
-
+  
   /**
    * 解析 map 到对象 (提供 props 以提高效率)
    *
@@ -317,7 +309,7 @@ public class PojoUtil {
     }
     return (T) pojo;
   }
-
+  
   /**
    * 将以 List.Map 形式存储的 pojos 转换为对象清单
    *
@@ -335,7 +327,7 @@ public class PojoUtil {
     }
     return pojos;
   }
-
+  
   /**
    * 映射对象 到 map (提供 props 以提高效率)
    *
@@ -353,7 +345,7 @@ public class PojoUtil {
     }
     return map;
   }
-
+  
   /**
    * 映射对象 到 map
    *
@@ -365,7 +357,7 @@ public class PojoUtil {
     List<PropertyDescriptor> props = getProps(pojo.getClass());
     return mapify(pojo, props);
   }
-
+  
   public static <T> List<Map<String, Object>> mapifys(List<T> pojos) {
     List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
     // 空数组检验
@@ -378,11 +370,11 @@ public class PojoUtil {
     }
     return maps;
   }
-
+  
   // endregion
-
+  
   // region ################################ 转换: 不同对象间的字段复制  ################################
-
+  
   /**
    * 將 source 中的字段复制到 target, 提供属性字段
    *
@@ -396,8 +388,8 @@ public class PojoUtil {
   private static void copy(Object source, Object target, Map<String, PropertyDescriptor> srcProps,
                            Map<String, PropertyDescriptor> tarProps, Collection<String> filters, Boolean withNull) {
     for (String field : filters) {
-      // 若过滤字段属于来源字段, 拷贝
-      if (srcProps.containsKey(field)) {
+      // 对同时存在于 src 和 tar 中的字段拷贝
+      if (srcProps.containsKey(field) && tarProps.containsKey(field)) {
         Object srcVal = getter(source, srcProps.get(field));
         // 若为空拷贝模式, 直接setter, 否则判断来源字段值是否为空再拷贝
         if (withNull || srcVal != null) {
@@ -406,7 +398,7 @@ public class PojoUtil {
       }
     }
   }
-
+  
   /**
    * 將 source 中的所有字段复制到 target, 提供属性字段
    *
@@ -420,14 +412,17 @@ public class PojoUtil {
                            Map<String, PropertyDescriptor> tarProps, Boolean withNull) {
     for (Iterator<String> iterator = srcProps.keySet().iterator(); iterator.hasNext(); ) {
       String field = iterator.next();
-      Object srcVal = getter(source, srcProps.get(field));
-      // 若为空拷贝模式, 直接setter, 否则判断来源字段值是否为空再拷贝
-      if (withNull || srcVal != null) {
-        setter(target, tarProps.get(field), srcVal);
+      // 对同时存在于 src 和 tar 中的字段拷贝
+      if (tarProps.containsKey(field)) {
+        Object srcVal = getter(source, srcProps.get(field));
+        // 若为空拷贝模式, 直接setter, 否则判断来源字段值是否为空再拷贝
+        if (withNull || srcVal != null) {
+          setter(target, tarProps.get(field), srcVal);
+        }
       }
     }
   }
-
+  
   /**
    * 將 source 中的字段复制到 target
    *
@@ -440,7 +435,7 @@ public class PojoUtil {
     Map<String, PropertyDescriptor> tarProps = getPropMap(target.getClass());
     copy(source, target, srcProps, tarProps, filters, withNull);
   }
-
+  
   /**
    * 將 source 中的字段复制到 target
    *
@@ -453,8 +448,8 @@ public class PojoUtil {
     Map<String, PropertyDescriptor> tarProps = getPropMap(target.getClass());
     copy(source, target, srcProps, tarProps, withNull);
   }
-
-
+  
+  
   /**
    * 將 source 中的字段复制到 target, 非空复制模式
    *
@@ -464,7 +459,7 @@ public class PojoUtil {
   public static void copy(Object source, Object target) {
     copy(source, target, false);
   }
-
+  
   /**
    * 將 source 中的字段复制到 target, 空复制模式
    *
@@ -474,9 +469,10 @@ public class PojoUtil {
   public static void copyWithNull(Object source, Object target) {
     copy(source, target, true);
   }
-
+  
   /**
    * 依照 source 创建新的 pojoClz 对象
+   *
    * @param source
    * @param pojoClz
    */
@@ -492,9 +488,10 @@ public class PojoUtil {
     copy(source, pojo);
     return pojo;
   }
-
+  
   /**
    * 依照 sources 清单创建新的 pojoClz 对象清单
+   *
    * @param sources 来源
    * @param pojoClz 目标类
    */
@@ -521,7 +518,7 @@ public class PojoUtil {
     }
     return pojos;
   }
-
+  
   /**
    * 依据锚点字段在 cites 中搜索与 sources 锚点值相同的 cite 记录,
    * 将该搜索到的记录的其他字段数据复制到对应的 source 中,
@@ -561,10 +558,10 @@ public class PojoUtil {
     }
     return sources;
   }
-
-
+  
+  
   // endregion
-
+  
   /*
    *
    *
@@ -590,5 +587,5 @@ public class PojoUtil {
    *
    *
    */
-
+  
 }
