@@ -1,27 +1,25 @@
 package com.daniel.util.json;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.daniel.util.debug.TimeKeeper;
-
-/**仿照 Json 节点操作集合以及集合元素, 包括节点的 替换/丢弃/提取.
- * @author Daniel
+/**
+ * 仿照 Json 节点操作集合以及集合元素, 包括节点的 替换/丢弃/提取.
  *
+ * @author Daniel
  */
 public class NodeOperator {
-
-  // [start]* ################################ 替换: substitute ################################ */
-  /**替换满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 替换函数
+  
+  // region ################################ 替换: substitute ################################
+  
+  /**
+   * 替换满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  替换函数
    */
   public static void substitute(Map json, Predicate predicate, Function function) {
     for (Object parent : json.keySet()) {
@@ -38,11 +36,13 @@ public class NodeOperator {
       }
     }
   }
-
-  /**替换满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 替换函数
+  
+  /**
+   * 替换满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  替换函数
    */
   public static void substitute(List json, Predicate predicate, Function function) {
     for (int ix = 0; ix < json.size(); ix++) {
@@ -59,11 +59,13 @@ public class NodeOperator {
       }
     }
   }
-
-  /**替换满足谓词条件的节点键
+  
+  /**
+   * 替换满足谓词条件的节点键
+   *
    * @param json
-   * @param predicate 谓词条件 
-   * @param function 替换函数
+   * @param predicate 谓词条件
+   * @param function  替换函数
    */
   public static void substituteKey(Map json, Predicate predicate, Function function) {
     for (Object parent : json.keySet().toArray()) {
@@ -82,11 +84,13 @@ public class NodeOperator {
       }
     }
   }
-
-  /**替换满足谓词条件的节点键值对
+  
+  /**
+   * 替换满足谓词条件的节点键值对
+   *
    * @param json
-   * @param predicate 谓词条件 
-   * @param function 替换函数
+   * @param predicate 谓词条件
+   * @param function  替换函数
    */
   public static void substituteEntry(Map json, Predicate<Entry> predicate, Function<Entry, Entry> function) {
     List<Entry> entryArr = new ArrayList<Entry>(json.entrySet());
@@ -109,8 +113,10 @@ public class NodeOperator {
       }
     }
   }
-
-  /**谓词条件为类别的替换
+  
+  /**
+   * 谓词条件为类别的替换
+   *
    * @param <T>
    * @param <R>
    * @param json
@@ -120,12 +126,15 @@ public class NodeOperator {
   public static <T, R> void substitute(Map json, Class<T> clz, Function<T, R> function) {
     substitute(json, node -> clz.isInstance(node), function);
   }
-  // [end]
-
-  // [start]* ################################ 丢弃: remove ################################ */
-  /**丢弃满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
+  // endregion
+  
+  // region ################################ 丢弃: remove ################################
+  
+  /**
+   * 丢弃满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
    */
   public static void remove(Map json, Predicate predicate) {
     for (Object parent : json.keySet().toArray()) {
@@ -142,10 +151,12 @@ public class NodeOperator {
       }
     }
   }
-
-  /**丢弃满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
+  
+  /**
+   * 丢弃满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
    */
   public static void remove(List json, Predicate predicate) {
     for (int ix = 0; ix < json.size(); ix++) {
@@ -162,14 +173,16 @@ public class NodeOperator {
       }
     }
   }
-  // [end]
-
-  // [start]* ################################ 提取: extract ################################ */
-
-  /**递归子函数: 提取满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 提取函数
+  // endregion
+  
+  // region ################################ 提取: extract ################################
+  
+  /**
+   * 递归子函数: 提取满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  提取函数
    */
   private static List extract(List extarcts, Map json, Predicate predicate, Function function) {
     for (Object parent : json.keySet()) {
@@ -187,11 +200,13 @@ public class NodeOperator {
     }
     return extarcts;
   }
-
-  /**递归子函数: 提取满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 提取函数
+  
+  /**
+   * 递归子函数: 提取满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  提取函数
    */
   private static List extract(List extarcts, List json, Predicate predicate, Function function) {
     for (int ix = 0; ix < json.size(); ix++) {
@@ -209,42 +224,50 @@ public class NodeOperator {
     }
     return extarcts;
   }
-
-  /**提取满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 提取函数
+  
+  /**
+   * 提取满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  提取函数
    */
   public static List extract(Map json, Predicate predicate, Function function) {
     return extract(new ArrayList(), json, predicate, function);
   }
-
-  /**提取满足谓词条件的节点值
-   * @param json 
-   * @param predicate 谓词条件 
-   * @param function 提取函数
+  
+  /**
+   * 提取满足谓词条件的节点值
+   *
+   * @param json
+   * @param predicate 谓词条件
+   * @param function  提取函数
    */
   public static List extract(List json, Predicate predicate, Function function) {
     return extract(new ArrayList(), json, predicate, function);
   }
-
-  /**提取满足谓词条件的节点值
-   * @param <T> 类型
-   * @param <R> 提取出类型
+  
+  /**
+   * 提取满足谓词条件的节点值
+   *
+   * @param <T>      类型
+   * @param <R>      提取出类型
    * @param json
-   * @param clz 谓词类型
+   * @param clz      谓词类型
    * @param function 提取函数
    * @return
    */
   public static <T> List extract(Map json, Class<T> clz, Function<T, ?> function) {
     return extract(new ArrayList(), json, node -> clz.isInstance(node), function);
   }
-
-  /**提取满足谓词条件的节点值
-   * @param <T> 类型
-   * @param <R> 提取出类型
+  
+  /**
+   * 提取满足谓词条件的节点值
+   *
+   * @param <T>      类型
+   * @param <R>      提取出类型
    * @param json
-   * @param clz 谓词类型
+   * @param clz      谓词类型
    * @param function 提取函数
    * @return
    */
@@ -254,18 +277,20 @@ public class NodeOperator {
   // [end]
   
   // [start]* ################################ 谓词条件 ################################ */
-
+  
   private <N> Predicate generics(Predicate<N> predicate, N node, Class... rest_clz) {
     List<Class> types = Arrays.asList(rest_clz);
     
     return predicate;
   }
   
-  // [end]
-
-  // [start]* ################################ 常用方法 ################################ */
-
-  /**映射键替换操作
+  // endregion
+  
+  // region ################################ 常用方法 ################################
+  
+  /**
+   * 映射键替换操作
+   *
    * @param source
    * @param cite
    */
@@ -273,7 +298,9 @@ public class NodeOperator {
     substituteKey(source, node -> cite.containsKey(node), node -> cite.get(node));
   }
   
-  /** 映射值替换操作: 按 cites: k->v 映射关系替换值
+  /**
+   * 映射值替换操作: 按 cites: k->v 映射关系替换值
+   *
    * @param <T>
    * @param source
    * @param cite
@@ -281,8 +308,10 @@ public class NodeOperator {
   public static <K, V1, V2> void alterVal(Map<K, V1> source, Map<V1, V2> cite) {
     substitute(source, node -> cite.containsKey(node), node -> cite.get(node));
   }
-
-  /**带键值约束的映射值替换操作: 按 cites: k1->f(k2->v) 的 k1 依次搜索 source 匹配的 key, 按照 k2->v 映射关系替换值
+  
+  /**
+   * 带键值约束的映射值替换操作: 按 cites: k1->f(k2->v) 的 k1 依次搜索 source 匹配的 key, 按照 k2->v 映射关系替换值
+   *
    * @param source
    * @param cites
    * @return
@@ -300,7 +329,7 @@ public class NodeOperator {
       return (Entry) map.entrySet().iterator().next();
     });
   }
-
-  // [end]
-
+  
+  // endregion
+  
 }

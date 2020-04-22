@@ -33,6 +33,12 @@
         <version>28.1-jre</version>
         <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 
@@ -50,22 +56,22 @@
     </snapshotRepository>
   </distributionManagement>
   <build>
-    <plugins>
-      <!-- deploy 部署前先打包 source.jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-            </execution>
-          </executions>
-        </plugin>
-    </plugins>
+  <plugins>
+    <!-- deploy 部署前先打包 source.jar -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-source-plugin</artifactId>
+      <version>3.0.1</version>
+      <executions>
+        <execution>
+          <id>attach-sources</id>
+          <phase>verify</phase>
+          <goals>
+            <goal>jar-no-fork</goal>
+          </goals>
+          </execution>
+        </executions>
+      </plugin>
+  </plugins>
   </build>
 </project>
