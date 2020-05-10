@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @author Daniel
  */
 public class PojoUtil {
-  
+
   // region ################################ 解析: 基础方法 ################################
   
   
@@ -197,7 +197,7 @@ public class PojoUtil {
   // endregion
   
   // region ################################ 切割: 按列选取 ################################
-  
+
   public static <R> List<R> getFields(List<?> pojos, String fieldName) {
     // 空数组
     if (pojos.size() == 0)

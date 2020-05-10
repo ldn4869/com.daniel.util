@@ -1,0 +1,228 @@
+DROP TABLE IF EXISTS `mf_physystem`;
+CREATE TABLE `mf_physystem` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `physystem_id`  VARCHAR(100) NOT NULL COMMENT '物理系统ID',
+  `physystem_name`  VARCHAR(255) NULL COMMENT '物理系统名称',
+  PRIMARY KEY (`physystem_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '物理系统';
+
+DROP TABLE IF EXISTS `mf_employee`;
+CREATE TABLE `mf_employee` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `employee_id`  VARCHAR(100) NOT NULL COMMENT '人员ID',
+  `employee_name`  VARCHAR(255) NULL COMMENT '人员名称',
+  `user_code`  VARCHAR(255) NULL COMMENT '登录ID',
+  PRIMARY KEY (`employee_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '人员';
+
+DROP TABLE IF EXISTS `mf_assembly`;
+CREATE TABLE `mf_assembly` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `assembly_id`  VARCHAR(100) NOT NULL COMMENT '组件ID',
+  `physystem_id`  VARCHAR(100) NULL COMMENT '从属物理系统ID',
+  `assembly_name`  VARCHAR(255) NULL COMMENT '组件名称',
+  `assembly_cn_name`  VARCHAR(255) NULL COMMENT '组件中文名称',
+  `assembly_leader`  VARCHAR(255) NULL COMMENT '组件负责人',
+  PRIMARY KEY (`assembly_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '组件';
+
+DROP TABLE IF EXISTS `mf_team`;
+CREATE TABLE `mf_team` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `team_id`  VARCHAR(100) NOT NULL COMMENT '工作组ID',
+  `team_name`  VARCHAR(255) NULL COMMENT '工作组名称',
+  PRIMARY KEY (`team_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '工作组';
+
+DROP TABLE IF EXISTS `indiv_special`;
+CREATE TABLE `indiv_special` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `special_id`  VARCHAR(100) NOT NULL COMMENT '专项ID',
+  `special_name`  VARCHAR(255) NULL COMMENT '专项名称',
+  `special_cn_name`  VARCHAR(255) NULL COMMENT '专项中文名',
+  `special_type`  VARCHAR(255) NULL COMMENT '专项类型',
+  PRIMARY KEY (`special_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '专项';
+
+DROP TABLE IF EXISTS `mf_project`;
+CREATE TABLE `mf_project` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `project_id`  VARCHAR(100) NOT NULL COMMENT '项目ID',
+  `project_name`  VARCHAR(255) NULL COMMENT '项目名称{domain:PROJECT_NAME}',
+  PRIMARY KEY (`project_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '项目';
+
+DROP TABLE IF EXISTS `role_rel_employee_assembly`;
+CREATE TABLE `role_rel_employee_assembly` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `rel_employee_assembly_id`  VARCHAR(100) NOT NULL COMMENT '组件人员关系ID',
+  `employee_id`  VARCHAR(100) NULL COMMENT '人员ID',
+  `assembly_id`  VARCHAR(100) NULL COMMENT '组件ID',
+  `relationship_type`  VARCHAR(255) NULL COMMENT '关系类型',
+  PRIMARY KEY (`rel_employee_assembly_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '组件人员关系';
+
+DROP TABLE IF EXISTS `role_rel_employee_special`;
+CREATE TABLE `role_rel_employee_special` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `rel_employee_special_id`  VARCHAR(100) NOT NULL COMMENT '专项人员关系ID',
+  `employee_id`  VARCHAR(100) NULL COMMENT '人员ID',
+  `special_id`  VARCHAR(100) NULL COMMENT '专项ID',
+  `relationship_type`  VARCHAR(255) NULL COMMENT '关系类型',
+  PRIMARY KEY (`rel_employee_special_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '专项人员关系';
+
+DROP TABLE IF EXISTS `asmb_rel_assembly_team`;
+CREATE TABLE `asmb_rel_assembly_team` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `rel_assembly_team_id`  VARCHAR(100) NOT NULL COMMENT '工作组组件关系ID',
+  `assembly_id`  VARCHAR(100) NULL COMMENT '组件ID',
+  `team_id`  VARCHAR(100) NULL COMMENT '工作组ID',
+  `relationship_type`  VARCHAR(255) NULL COMMENT '关系类型',
+  PRIMARY KEY (`rel_assembly_team_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '工作组组件关系';
+
+DROP TABLE IF EXISTS `role_rel_employee_team`;
+CREATE TABLE `role_rel_employee_team` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `rel_employee_team_id`  VARCHAR(100) NOT NULL COMMENT '工作组员工关系ID',
+  `employee_id`  VARCHAR(100) NULL COMMENT '员工ID',
+  `team_id`  VARCHAR(100) NULL COMMENT '工作组ID',
+  `relationship_type`  VARCHAR(255) NULL COMMENT '关系类型',
+  PRIMARY KEY (`rel_employee_team_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '工作组员工关系';
+
+DROP TABLE IF EXISTS `code_relationship`;
+CREATE TABLE `code_relationship` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `relationship_id`  VARCHAR(100) NOT NULL COMMENT '关系ID',
+  `rel_subject`  VARCHAR(255) NULL COMMENT '关系主体',
+  `rel_object`  VARCHAR(255) NULL COMMENT '关系客体',
+  `rel_type_code`  VARCHAR(255) NULL COMMENT '关系类型码',
+  `rel_type_name`  VARCHAR(255) NULL COMMENT '关系名称',
+  `dict_name`  VARCHAR(255) NULL COMMENT '字典别名',
+  PRIMARY KEY (`relationship_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '关系类型表';
+
+DROP TABLE IF EXISTS `asmb_dict_correlative_analysis`;
+CREATE TABLE `asmb_dict_correlative_analysis` (
+  `create_date`  TIMESTAMP COMMENT '创建日期',
+  `creator`  VARCHAR(100) COMMENT '创建人',
+  `last_update_date`  TIMESTAMP COMMENT '最后更新日期',
+  `last_updator`  VARCHAR(100) COMMENT '最后更新人',
+  `del_flag`  BIT COMMENT '删除标志',
+  `tenant`  VARCHAR(100) NOT NULL COMMENT '租户ID',
+  `dict_correlative_analysis_id`  VARCHAR(100) NOT NULL COMMENT '相关性分析ID',
+  `subsystem`  VARCHAR(100) NULL COMMENT '组件',
+  `src_name`  VARCHAR(255) NULL COMMENT '分析源文件名',
+  `src_cname`  VARCHAR(255) NULL COMMENT '分析源中文名',
+  `src_type`  VARCHAR(255) NULL COMMENT '分析源类型',
+  `ref_id`  VARCHAR(255) NULL COMMENT '相关方ID',
+  `ref_en`  VARCHAR(255) NULL COMMENT '相关方英文名',
+  `ref_cname`  VARCHAR(255) NULL COMMENT '相关方中文名',
+  `ref_ccb_type`  VARCHAR(255) NULL COMMENT '相关方CCB类型',
+  `ref_type`  VARCHAR(255) NULL COMMENT '相关方类型',
+  `src_path`  VARCHAR(255) NULL COMMENT '源存放路径',
+  `load_date`  VARCHAR(255) NULL COMMENT '载入日期',
+  `dev_stream`  VARCHAR(255) NULL COMMENT '活动流',
+  PRIMARY KEY (`dict_correlative_analysis_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '相关性分析表';
+
+DROP TABLE IF EXISTS `proj_stream`;
+CREATE TABLE `proj_stream` (
+  `create_date` timestamp NULL DEFAULT NULL COMMENT '创建日期',
+  `creator` varchar(100) DEFAULT NULL COMMENT '创建人',
+  `last_update_date` timestamp NULL DEFAULT NULL COMMENT '最后更新日期',
+  `last_updator` varchar(100) DEFAULT NULL COMMENT '最后更新人',
+  `del_flag` bit(1) DEFAULT NULL COMMENT '删除标志',
+  `tenant` varchar(100) NOT NULL COMMENT '租户ID',
+  `stream_id`  VARCHAR(100) NOT NULL COMMENT '投产ID{hidden:true}',
+  `stream_date`  TIMESTAMP NULL COMMENT '投产日期{required:true}',
+  `version_type`  VARCHAR(100) NULL COMMENT '版本类型',
+  `develop_env`  VARCHAR(100) NULL COMMENT '开发空间',
+  `ct_env`  VARCHAR(100) NULL COMMENT '应用组装测试环境',
+  `ct_start_date`  TIMESTAMP NULL COMMENT '应用组装测试开始时间',
+  `ct_end_date`  TIMESTAMP NULL COMMENT '应用组装测试结束时间',
+  `uat_env`  VARCHAR(100) NULL COMMENT '用户测试环境',
+  `uat_start_date`  TIMESTAMP NULL COMMENT '用户测试开始时间',
+  `uat_end_date`  TIMESTAMP NULL COMMENT '用户测试结束时间',
+  `migration1_date`  TIMESTAMP NULL COMMENT '第一批迁移时间',
+  `migration2_date`  TIMESTAMP NULL COMMENT '第二迁移时间',
+  `seal_date`  TIMESTAMP NULL COMMENT '封板时间',
+  `task_build_deadline`  TIMESTAMP NULL COMMENT '任务建立截止时间',
+  `version_rebuild_date`  TIMESTAMP NULL COMMENT '版本构造及提交时间',
+  `version_install_date`  TIMESTAMP NULL COMMENT '版本安装部署时间',
+  `vvt_env`  VARCHAR(100) NULL COMMENT '版本检验测试环境',
+  `vvt_green_light`  TIMESTAMP NULL COMMENT '版本检验绿灯时间',
+  `vvt_start_date`  TIMESTAMP NULL COMMENT '版本检验测试开始时间',
+  `vvt_end_date`  TIMESTAMP NULL COMMENT '版本检验测试结束时间',
+  PRIMARY KEY (`stream_id`))
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '投产点信息';

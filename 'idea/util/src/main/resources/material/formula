@@ -1,0 +1,14 @@
+tables:
+(?<tables>
+DROP TABLE IF EXISTS `(?<name>\w+)`;
+CREATE TABLE `(?<name>\w+)` \(
+  (?<columns>
+^  `(?<name>\w+)` +[a-zA-Z0-9() ]+ COMMENT '(?<cnName>\S+)',$
+  )+
+  PRIMARY KEY \(`(?<primaryKey>\w+)`\)\)
+ENGINE InnoDB DEFAULT CHARACTER SET utf8
+COMMENT '(?<cnName>.+)';
+  (?<null>
+^(?<space>\s*)+$
+  )+
+)+

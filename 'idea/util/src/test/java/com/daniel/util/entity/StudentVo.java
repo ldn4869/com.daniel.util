@@ -26,11 +26,11 @@ public class StudentVo {
   public int getAge() {
     return age;
   }
-  
+
   public void setAge(int age) {
     this.age = age;
   }
-  
+//
   public Date getBirthday() {
     return birthday;
   }
