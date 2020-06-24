@@ -6,10 +6,18 @@ import org.junit.Test;
 import java.util.UUID;
 
 public class FuncTest {
+
   @Test
   public void test1() throws Exception {
     String uuid = UUID.randomUUID().toString();
     StringUtils.remove(uuid, '-');
     return;
   }
+  
+  @Test
+  public void test2() throws Exception {
+    
+    return;
+  }
+  
 }

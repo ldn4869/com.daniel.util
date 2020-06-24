@@ -1,16 +1,14 @@
 package com.daniel.util.tester;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import org.junit.Test;
-
 import com.daniel.util.entity.Student;
 import com.daniel.util.json.NodeOperator;
 import com.daniel.util.space.DataSpace;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class VectorTester {
 
@@ -68,7 +66,7 @@ public class VectorTester {
     };
     NodeOperator.substitute(stuVecs, List.class, node -> {
       List<Student> list = (List) node;
-      list.sort(Comparator.comparing(Student::getAge).reversed());
+//      list.sort(Comparator.comparing(Student::getAge).reversed());
       return list;
     });
     List<Student> list = NodeOperator.extract(stuVecs, List.class, po -> po.get(0));
