@@ -10,6 +10,10 @@ public class CaptureBound implements Regexp, Indexable {
 
   private BoundEnum boundEnum;
 
+  private Integer minRepeat = null;
+
+  private Integer maxRepeat = null;
+
   private int start;
 
   private int end;
@@ -43,9 +47,25 @@ public class CaptureBound implements Regexp, Indexable {
     this.boundEnum = boundEnum;
   }
 
+  public Integer getMinRepeat() {
+    return minRepeat;
+  }
+
+  public void setMinRepeat(Integer minRepeat) {
+    this.minRepeat = minRepeat;
+  }
+
+  public Integer getMaxRepeat() {
+    return maxRepeat;
+  }
+
+  public void setMaxRepeat(Integer maxRepeat) {
+    this.maxRepeat = maxRepeat;
+  }
+
   @Override
   public String toString() {
-    return boundEnum == BoundEnum.OPEN ? "(?<" + name + ">" : ")";
+    return boundEnum == BoundEnum.OPEN ? "(?<" + name + ">" : bunchEnum == BunchEnum.ELEMENT ? ")" : ")+";
   }
 
   @Override

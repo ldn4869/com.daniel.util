@@ -1,12 +1,12 @@
 package com.daniel.util.fomula.operator;
 
+import com.daniel.util.fomula.constant.PatternConst;
 import com.daniel.util.fomula.entity.*;
+import com.daniel.util.fomula.exception.FomulaException;
 import com.daniel.util.tree.Node;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,36 +18,24 @@ public class RegexpSolver {
   // region 分割文本为正则式
 
   public List<Node<Regexp>> split(List<String> formulas) {
-//    String openBound = "^ *(?<open>\\()\\?<(?<name>[A-Za-z0-9]+)>$";
-//    String closeBound = "^ *(?<finSymbol>(?<close>\\))\\+?)$";
-//    // 捕获组边界
-//    String captureBoundContent = openBound + "|" + closeBound;
+
     List<Node<Regexp>> regexps = new ArrayList<Node<Regexp>>();
-//    List<Node<Regexp>> lines = new ArrayList<Node<Regexp>>();
-//    for (int ix = 0; ix < formulas.size(); ix++) {
-//      String formula = formulas.get(ix);
-//      Matcher captureBoundMatcher = Pattern.compile(captureBoundContent).matcher(formula);
-//      // 按捕获组边界分割正则式
-//      if (captureBoundMatcher.matches()) {
-//        // 将先前的匹配式存入
-//        if (lines.size() > 0) {
-//          regexps.addAll(lines);
-//          lines = new ArrayList<Node<Regexp>>();
-//        }
-//        // 按捕获组的开闭括号创建边界匹配对象
-//        regexps.add(new Node<Regexp>(createCaptureBound(captureBoundMatcher)));
-//      }
-//      // 不匹配边界正则式时, 添加匹配式
-//      else {
-//        lines.add(new Node<Regexp>(new LineBound(BoundEnum.OPEN)));
-//        lines.addAll(splitLine(formula));
-//        lines.add(new Node<Regexp>(new LineBound(BoundEnum.CLOSE)));
-//      }
-//    }
-//    // 将最后的匹配式存入
-//    if (lines.size() > 0) {
-//      regexps.addAll(lines);
-//    }
+    for (int ix = 0; ix < formulas.size(); ix++) {
+      String formula = formulas.get(ix);
+      Matcher openBoundMatcher = Pattern.compile(PatternConst.LINE_START + PatternConst.INDENT + PatternConst.CAPTURE_OPEN_BOUND + PatternConst.LINE_END).matcher(formula);
+      Matcher closeBoundMatcher = Pattern.compile(PatternConst.LINE_END + PatternConst.INDENT + PatternConst.CAPTURE_CLOSE_BOUND + PatternConst.LINE_END).matcher(formula);
+      List<CaptureBound> bounds = new ArrayList<CaptureBound>();
+      // 匹配捕获组边界时, 创建捕获组
+      if (openBoundMatcher.find()) {
+        regexps.add(new Node<Regexp>(createCaptureBound(BoundEnum.OPEN, openBoundMatcher)));
+      } else if (closeBoundMatcher.find()) {
+        regexps.add(new Node<Regexp>(createCaptureBound(BoundEnum.CLOSE, closeBoundMatcher)));
+      }
+      // 不匹配边界正则式时, 添加匹配式
+      else {
+        regexps.addAll(splitLine(formula));
+      }
+    }
     return regexps;
   }
 
@@ -58,19 +46,12 @@ public class RegexpSolver {
    * @return
    */
   public List<Node<Regexp>> splitLine(String regex) {
-    // 零个或偶数个转义符, 以区分转义括号与捕获组边界
-    String evenBackslash = "((?<!\\\\)|(?<=\\\\\\\\)+)";
-    String openBound = evenBackslash + "\\((\\?<(?<name>\\w+)>)?";
-    String closeBound = evenBackslash + "\\)(?<bunchSymbol>\\+)?";
-    String squareOpenBound = evenBackslash + "(?<squareOpen>\\[)";
-    String squareCloseBound = evenBackslash + "(?<squareClose>\\])";
-    String orRegex = "|";
     // 捕获组边界
-    Matcher openBoundMatcher = Pattern.compile(openBound).matcher(regex);
-    Matcher closeBoundMatcher = Pattern.compile(closeBound).matcher(regex);
-    // 逃逸组边界
-    Matcher escapeOpenBoundMatcher = Pattern.compile(openBound).matcher(regex);
-    Matcher escapeCloseBoundMatcher = Pattern.compile(closeBound).matcher(regex);
+    Matcher openBoundMatcher = Pattern.compile(PatternConst.EVEN_BCAKSLASH + PatternConst.CAPTURE_OPEN_BOUND).matcher(regex);
+    Matcher closeBoundMatcher = Pattern.compile(PatternConst.EVEN_BCAKSLASH + PatternConst.CAPTURE_CLOSE_BOUND).matcher(regex);
+//    // 逃逸组边界
+//    Matcher escapeOpenBoundMatcher = Pattern.compile(openBound).matcher(regex);
+//    Matcher escapeCloseBoundMatcher = Pattern.compile(closeBound).matcher(regex);
     List<CaptureBound> bounds = new ArrayList<CaptureBound>();
     // 捕获组边界
     while (openBoundMatcher.find()) {
@@ -79,27 +60,38 @@ public class RegexpSolver {
     while (closeBoundMatcher.find()) {
       bounds.add(createCaptureBound(BoundEnum.CLOSE, closeBoundMatcher));
     }
+    return handleRegexByCaptureBound(regex, bounds);
+  }
+
+  /**
+   * 根据捕获组边界分割表达式元素
+   *
+   * @param regex
+   * @param bounds
+   * @return
+   */
+  public List<Node<Regexp>> handleRegexByCaptureBound(String regex, List<CaptureBound> bounds) {
     bounds.sort(Comparator.comparing(CaptureBound::getStart));
+    List<Indexable> indexables = new ArrayList<Indexable>();
     // 初始化
+    int offset = 0;
+    for (CaptureBound bound : bounds) {
+      if (offset < bound.getStart()) {
+        indexables.add(new Expression(regex, offset, bound.getStart()));
+      }
+      indexables.add(bound);
+      offset = bound.getEnd();
+    }
+    if (offset < regex.length()) {
+      indexables.add(new Expression(regex, offset, regex.length()));
+    }
+    indexables.sort(Comparator.comparing(Indexable::getStart));
+    // 转换为 Regexp 表达式
+    List<Node<Regexp>> elements = indexables.stream().map(indexable -> (Regexp) indexable).map(Node<Regexp>::new).collect(Collectors.toList());
     List<Node<Regexp>> regexps = new ArrayList<Node<Regexp>>();
     // 头部
     regexps.add(new Node<Regexp>(new LineBound(BoundEnum.OPEN)));
-    if (bounds.size() > 0 && bounds.get(0).getStart() > 0) {
-      regexps.add(new Node<Regexp>(new Expression(StringUtils.substring(regex, 0, bounds.get(0).getStart()))));
-    }
-    for (int ix = 0; ix < bounds.size() - 1; ix++) {
-      CaptureBound current = bounds.get(ix);
-      regexps.add(new Node<Regexp>(current));
-      // 考察现一边界结束和下一边界开始之间需不需要添加表达式
-      CaptureBound next = bounds.get(ix + 1);
-      if (current.getEnd() < next.getStart()) {
-        regexps.add(new Node<Regexp>(new Expression(StringUtils.substring(regex, current.getEnd(), next.getStart()))));
-      }
-    }
-    // 尾部
-    if (bounds.size() > 0 && bounds.get(bounds.size() - 1).getEnd() < regex.length()) {
-      regexps.add(new Node<Regexp>(new Expression(StringUtils.substring(regex, bounds.get(bounds.size() - 1).getEnd(), regex.length()))));
-    }
+    regexps.addAll(elements);
     regexps.add(new Node<Regexp>(new LineBound(BoundEnum.CLOSE)));
     return regexps;
   }
@@ -120,8 +112,16 @@ public class RegexpSolver {
     } else {
       // 设置捕获组簇类型
       String bunchSymbol = matcher.group("bunchSymbol");
-      if (StringUtils.equals(bunchSymbol, "+")) {
+      if (StringUtils.equals(bunchSymbol, PatternConst.ONCE_OR_NOT)) {
         captureBound.setBunchEnum(BunchEnum.LIST);
+        captureBound.setMinRepeat(0);
+        captureBound.setMaxRepeat(1);
+      } else if (StringUtils.equals(bunchSymbol, PatternConst.ZERO_OR_MORE)) {
+        captureBound.setBunchEnum(BunchEnum.LIST);
+        captureBound.setMinRepeat(0);
+      } else if (StringUtils.equals(bunchSymbol, PatternConst.ONE_OR_MORE)) {
+        captureBound.setBunchEnum(BunchEnum.LIST);
+        captureBound.setMinRepeat(1);
       } else {
         captureBound.setBunchEnum(BunchEnum.ELEMENT);
       }
@@ -164,12 +164,19 @@ public class RegexpSolver {
     return destRoot;
   }
 
+  /**
+   * 依据捕获组开闭边界内的相关元素创建捕获组
+   *
+   * @param nodes
+   * @return
+   */
   private Capture createCapture(List<Node<Regexp>> nodes) {
     if (nodes.size() < 2) {
       throw new RuntimeException();
     }
     Regexp firstRegexp = nodes.get(0).getData();
     Regexp lastRegexp = nodes.get(nodes.size() - 1).getData();
+    // 检验首尾表达式是否是捕获组开闭边界
     if (RegexpEnum.CAPTURE_BOUND == firstRegexp.getRegexpEnum() && RegexpEnum.CAPTURE_BOUND == lastRegexp.getRegexpEnum()) {
       CaptureBound open = (CaptureBound) firstRegexp;
       CaptureBound close = (CaptureBound) lastRegexp;
@@ -177,16 +184,18 @@ public class RegexpSolver {
         Capture capture = new Capture();
         capture.setName(open.getName());
         capture.setBunchEnum(close.getBunchEnum());
+        capture.setMinRepeat(close.getMinRepeat());
+        capture.setMaxRepeat(close.getMaxRepeat());
         return capture;
       }
-      throw new RuntimeException();
+      throw new FomulaException();
     }
-    throw new RuntimeException();
+    throw new FomulaException();
   }
 
   private ExpressionLine createExpressionLine(List<Node<Regexp>> nodes) {
     if (nodes.size() < 2) {
-      throw new RuntimeException();
+      throw new FomulaException();
     }
     Regexp firstRegexp = nodes.get(0).getData();
     Regexp lastRegexp = nodes.get(nodes.size() - 1).getData();
@@ -200,9 +209,9 @@ public class RegexpSolver {
 //        ExpressionLine expressionLine = new ExpressionLine("");
         return expressionLine;
       }
-      throw new RuntimeException();
+      throw new FomulaException();
     }
-    throw new RuntimeException();
+    throw new FomulaException();
   }
 
   public String toExpression(Node<Regexp> node, Node<Regexp> target) {

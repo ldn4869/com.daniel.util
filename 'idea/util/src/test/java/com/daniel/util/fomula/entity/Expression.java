@@ -1,5 +1,7 @@
 package com.daniel.util.fomula.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Expression implements Regexp, Indexable {
   
   private final RegexpEnum regexpEnum = RegexpEnum.EXPRESSION;
@@ -19,7 +21,13 @@ public class Expression implements Regexp, Indexable {
   public Expression(String regex) {
     this.regex = regex;
   }
-  
+
+  public Expression(String regex, int start, int end) {
+    this.regex = StringUtils.substring(regex, start, end);
+    this.start = start;
+    this.end = end;
+  }
+
   @Override
   public RegexpEnum getRegexpEnum() {
     return regexpEnum;
@@ -57,22 +65,18 @@ public class Expression implements Regexp, Indexable {
     this.boundEnum = boundEnum;
   }
 
-  @Override
   public int getStart() {
     return start;
   }
 
-  @Override
   public void setStart(int start) {
     this.start = start;
   }
 
-  @Override
   public int getEnd() {
     return end;
   }
 
-  @Override
   public void setEnd(int end) {
     this.end = end;
   }
