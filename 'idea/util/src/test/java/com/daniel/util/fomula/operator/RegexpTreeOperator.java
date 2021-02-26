@@ -1,10 +1,10 @@
 package com.daniel.util.fomula.operator;
 
-import com.daniel.util.fomula.entity.BoundEnum;
+import com.daniel.util.fomula.constant.BoundEnum;
 import com.daniel.util.fomula.entity.CaptureBound;
 import com.daniel.util.fomula.entity.LineBound;
 import com.daniel.util.fomula.entity.Regexp;
-import com.daniel.util.fomula.entity.RegexpEnum;
+import com.daniel.util.fomula.constant.RegexpEnum;
 import com.daniel.util.tree.Node;
 import com.daniel.util.tree.TreeConstructor;
 import com.daniel.util.tree.TreeOperator;
@@ -63,11 +63,5 @@ public final class RegexpTreeOperator extends TreeOperator<Regexp> {
   }
 
   // endregion
-
-
-  public Node<Regexp> gather(List<Node<Regexp>> traversal) {
-    Node<List<Node<Regexp>>> hierachy = hierachy(traversal);
-    return null;
-  }
 
 }

@@ -1,3 +1,4 @@
+^(?<name>\w+):(?<tels>\((?<area>\d+)-(?<num>\d+)\),?)+$
 tables:
 (?<tables>
 DROP TABLE IF EXISTS `(?<name>\w+)`;

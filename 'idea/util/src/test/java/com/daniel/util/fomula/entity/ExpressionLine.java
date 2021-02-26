@@ -1,8 +1,10 @@
 package com.daniel.util.fomula.entity;
 
-public class ExpressionLine implements Regexp {
+import com.daniel.util.fomula.constant.FormulaEnum;
+
+public class ExpressionLine implements Formula {
   
-  private final RegexpEnum regexpEnum = RegexpEnum.LINE;
+  private final FormulaEnum formulaEnum = FormulaEnum.LINE;
   
   private String line;
 
@@ -20,8 +22,8 @@ public class ExpressionLine implements Regexp {
     this.line = line;
   }
   
-  public RegexpEnum getRegexpEnum() {
-    return regexpEnum;
+  public FormulaEnum getFormulaEnum() {
+    return formulaEnum;
   }
   
   public String toString() {

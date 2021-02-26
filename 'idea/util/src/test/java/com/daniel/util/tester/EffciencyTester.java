@@ -55,16 +55,16 @@ public class EffciencyTester {
     return complexs;
   }
 
-  private static <T, V> List<Student> parsesStudent(List<Map<String, V>> maps) {
-    List<Student> pojos = new ArrayList<Student>();
-    for (Map<String, V> map : maps) {
-      String name = (String) map.get("name");
-      int age = (int) map.get("age");
-      String sex = (String) map.get("sex");
-      pojos.add(new Student(name, age, sex));
-    }
-    return pojos;
-  }
+//  private static <T, V> List<Student> parsesStudent(List<Map<String, V>> maps) {
+//    List<Student> pojos = new ArrayList<Student>();
+//    for (Map<String, V> map : maps) {
+//      String name = (String) map.get("name");
+//      int age = (int) map.get("age");
+//      String sex = (String) map.get("sex");
+//      pojos.add(new Student(name, age, sex));
+//    }
+//    return pojos;
+//  }
 
   private static <T, V> List<Complex> parsesComplex(List<Map<String, Object>> maps) {
     List<Complex> pojos = new ArrayList<Complex>();
@@ -305,7 +305,7 @@ public class EffciencyTester {
     TimeKeeper.step(0);
     List<Student> stus1 = PojoUtil.parses(stuMaps1, Student.class);
     TimeKeeper.step(1);
-    List<Student> stus3 = parsesStudent(stuMaps2);
+//    List<Student> stus3 = parsesStudent(stuMaps2);
     TimeKeeper.step(2);
   }
 

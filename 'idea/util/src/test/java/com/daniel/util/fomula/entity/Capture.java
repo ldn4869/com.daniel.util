@@ -1,12 +1,18 @@
 package com.daniel.util.fomula.entity;
 
-public class Capture implements Regexp {
+import com.daniel.util.fomula.constant.BunchEnum;
+import com.daniel.util.fomula.constant.CaptureEnum;
+import com.daniel.util.fomula.constant.FormulaEnum;
 
-  private final RegexpEnum regexpEnum = RegexpEnum.CAPTURE;
+public class Capture implements Formula {
+
+  private final FormulaEnum formulaEnum = FormulaEnum.CAPTURE;
 
   private String name;
 
   private BunchEnum bunchEnum;
+
+  private CaptureEnum captureEnum;
 
   private Integer minRepeat = null;
 
@@ -33,12 +39,12 @@ public class Capture implements Regexp {
     return bunchEnum;
   }
 
-  public void setBunchEnum(BunchEnum bunchEnum) {
-    this.bunchEnum = bunchEnum;
+  public FormulaEnum getFormulaEnum() {
+    return formulaEnum;
   }
 
-  public RegexpEnum getRegexpEnum() {
-    return regexpEnum;
+  public void setBunchEnum(BunchEnum bunchEnum) {
+    this.bunchEnum = bunchEnum;
   }
 
   public Integer getMinRepeat() {
@@ -57,15 +63,27 @@ public class Capture implements Regexp {
     this.maxRepeat = maxRepeat;
   }
 
-  @Override
-  public String toString() {
+  public CaptureEnum getCaptureEnum() {
+    return captureEnum;
+  }
+
+  public void setCaptureEnum(CaptureEnum captureEnum) {
+    this.captureEnum = captureEnum;
+  }
+
+  public String getRepeatSuffix() {
     if (BunchEnum.LIST == bunchEnum) {
-      return "?<" + name + ">{"
-          + (getMinRepeat() != null ? getMinRepeat() : "") + ","
+      return "{"
+          + (getMinRepeat() != null ? getMinRepeat() : 0) + ","
           + (getMaxRepeat() != null ? getMaxRepeat() : "") + "}";
     } else {
-      return "?<" + name + ">";
+      return "";
     }
+  }
+
+  @Override
+  public String toString() {
+    return "?<" + name + ">" + getRepeatSuffix();
 
   }
 

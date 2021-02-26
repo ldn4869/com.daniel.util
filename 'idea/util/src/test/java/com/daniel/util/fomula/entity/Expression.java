@@ -1,10 +1,16 @@
 package com.daniel.util.fomula.entity;
 
+import com.daniel.util.fomula.constant.BoundEnum;
+import com.daniel.util.fomula.constant.BunchEnum;
+import com.daniel.util.fomula.constant.FormulaEnum;
+import com.daniel.util.fomula.constant.RegexpEnum;
 import org.apache.commons.lang3.StringUtils;
 
-public class Expression implements Regexp, Indexable {
+public class Expression implements Regexp, Indexable, Formula {
   
   private final RegexpEnum regexpEnum = RegexpEnum.EXPRESSION;
+
+  private final FormulaEnum formulaEnum = FormulaEnum.EXPRESSION;
   
   private String content;
   
@@ -84,5 +90,10 @@ public class Expression implements Regexp, Indexable {
   @Override
   public String toString() {
     return regex;
+  }
+
+  @Override
+  public FormulaEnum getFormulaEnum() {
+    return formulaEnum;
   }
 }

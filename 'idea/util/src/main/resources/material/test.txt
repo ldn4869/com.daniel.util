@@ -1,3 +1,5 @@
+daniel:(0797-8355205),(021-18817392972),(021-18918503239)
+tables:
 DROP TABLE IF EXISTS `mf_physystem`;
 CREATE TABLE `mf_physystem` (
   `create_date`  TIMESTAMP COMMENT '创建日期',

@@ -1,5 +1,8 @@
 package com.daniel.util.fomula.entity;
 
+import com.daniel.util.fomula.constant.BoundEnum;
+import com.daniel.util.fomula.constant.RegexpEnum;
+
 public class LineBound implements Regexp {
   
   private final RegexpEnum regexpEnum = RegexpEnum.LINE_BOUND;

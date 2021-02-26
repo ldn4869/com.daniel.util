@@ -1,5 +1,9 @@
 package com.daniel.util.fomula.entity;
 
+import com.daniel.util.fomula.constant.BoundEnum;
+import com.daniel.util.fomula.constant.BunchEnum;
+import com.daniel.util.fomula.constant.RegexpEnum;
+
 public class CaptureBound implements Regexp, Indexable {
 
   private final RegexpEnum regexpEnum = RegexpEnum.CAPTURE_BOUND;
@@ -61,6 +65,16 @@ public class CaptureBound implements Regexp, Indexable {
 
   public void setMaxRepeat(Integer maxRepeat) {
     this.maxRepeat = maxRepeat;
+  }
+
+  public String getRepeatSuffix(){
+    if (BunchEnum.LIST == bunchEnum) {
+      return "{"
+          + (getMinRepeat() != null ? getMinRepeat() : 0) + ","
+          + (getMaxRepeat() != null ? getMaxRepeat() : "") + "}";
+    } else {
+      return "";
+    }
   }
 
   @Override

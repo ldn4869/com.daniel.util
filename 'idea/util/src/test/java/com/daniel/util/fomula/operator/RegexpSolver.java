@@ -1,19 +1,35 @@
 package com.daniel.util.fomula.operator;
 
+import com.daniel.util.fomula.constant.BoundEnum;
+import com.daniel.util.fomula.constant.BunchEnum;
+import com.daniel.util.fomula.constant.CaptureEnum;
+import com.daniel.util.fomula.constant.FormulaEnum;
 import com.daniel.util.fomula.constant.PatternConst;
-import com.daniel.util.fomula.entity.*;
+import com.daniel.util.fomula.constant.RegexpEnum;
+import com.daniel.util.fomula.entity.Capture;
+import com.daniel.util.fomula.entity.CaptureBound;
+import com.daniel.util.fomula.entity.Expression;
+import com.daniel.util.fomula.entity.ExpressionLine;
+import com.daniel.util.fomula.entity.Formula;
+import com.daniel.util.fomula.entity.Indexable;
+import com.daniel.util.fomula.entity.LineBound;
+import com.daniel.util.fomula.entity.Regexp;
+import com.daniel.util.fomula.entity.Solution;
 import com.daniel.util.fomula.exception.FomulaException;
 import com.daniel.util.tree.Node;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ *
+ */
 public class RegexpSolver {
-
-  final private RegexpTreeOperator regexpTreeOperator = new RegexpTreeOperator();
 
   // region 分割文本为正则式
 
@@ -23,7 +39,7 @@ public class RegexpSolver {
     for (int ix = 0; ix < formulas.size(); ix++) {
       String formula = formulas.get(ix);
       Matcher openBoundMatcher = Pattern.compile(PatternConst.LINE_START + PatternConst.INDENT + PatternConst.CAPTURE_OPEN_BOUND + PatternConst.LINE_END).matcher(formula);
-      Matcher closeBoundMatcher = Pattern.compile(PatternConst.LINE_END + PatternConst.INDENT + PatternConst.CAPTURE_CLOSE_BOUND + PatternConst.LINE_END).matcher(formula);
+      Matcher closeBoundMatcher = Pattern.compile(PatternConst.LINE_START + PatternConst.INDENT + PatternConst.CAPTURE_CLOSE_BOUND + PatternConst.LINE_END).matcher(formula);
       List<CaptureBound> bounds = new ArrayList<CaptureBound>();
       // 匹配捕获组边界时, 创建捕获组
       if (openBoundMatcher.find()) {
@@ -131,8 +147,16 @@ public class RegexpSolver {
 
   // endregion
 
+  // region 聚集为结构
 
-  public Node<Regexp> gather(Node<List<Node<Regexp>>> self, Node<Regexp> destRoot) {
+  /**
+   * 将层次化的碎片结构聚集为结构树
+   *
+   * @param self
+   * @param destFormula
+   * @return
+   */
+  public void gather(Node<List<Node<Regexp>>> self, Node<Formula> destFormula) {
     List<Node<Regexp>> regexps = self.getData();
     // 根结点
     if (regexps.size() == 0) {
@@ -141,27 +165,26 @@ public class RegexpSolver {
     // 捕获组结点, 创建捕获组
     else if (RegexpEnum.CAPTURE_BOUND == regexps.get(0).getData().getRegexpEnum()) {
       Capture capture = createCapture(regexps);
-      destRoot.setData(capture);
+      destFormula.setData(capture);
     }
     // 行结点, 创建捕获组
     else if (RegexpEnum.LINE_BOUND == regexps.get(0).getData().getRegexpEnum()) {
       ExpressionLine expressionLine = createExpressionLine(regexps);
-      destRoot.setData(expressionLine);
+      destFormula.setData(expressionLine);
     }
     // 普通内容结点, 创建匹配表达式
     else {
       Node<Regexp> first = regexps.get(0);
       Expression expression = (Expression) first.getData();
-      destRoot.setData(expression);
+      destFormula.setData(expression);
     }
     // 递归子结点
     for (Node<List<Node<Regexp>>> child : self.getChilds()) {
-      Node<Regexp> destChild = new Node<Regexp>();
-      destChild.setParent(destRoot);
-      destRoot.getChilds().add(destChild);
+      Node<Formula> destChild = new Node<Formula>();
+      destChild.setParent(destFormula);
+      destFormula.getChilds().add(destChild);
       gather(child, destChild);
     }
-    return destRoot;
   }
 
   /**
@@ -193,6 +216,12 @@ public class RegexpSolver {
     throw new FomulaException();
   }
 
+  /**
+   * 依据行开闭边界内的相关元素创建行表达式
+   *
+   * @param nodes
+   * @return
+   */
   private ExpressionLine createExpressionLine(List<Node<Regexp>> nodes) {
     if (nodes.size() < 2) {
       throw new FomulaException();
@@ -203,10 +232,9 @@ public class RegexpSolver {
       LineBound open = (LineBound) firstRegexp;
       LineBound close = (LineBound) lastRegexp;
       if (BoundEnum.OPEN == open.getBoundEnum() && BoundEnum.CLOSE == close.getBoundEnum()) {
-        Node<Regexp> lineNode = new Node<Regexp>(new ExpressionLine(""));
+        Node<Regexp> lineNode = new Node<Regexp>(() -> RegexpEnum.LINE);
         lineNode.setChilds(nodes.subList(1, nodes.size() - 1));
-        ExpressionLine expressionLine = new ExpressionLine(toExpression(lineNode));
-//        ExpressionLine expressionLine = new ExpressionLine("");
+        ExpressionLine expressionLine = new ExpressionLine(toLineExpression(lineNode));
         return expressionLine;
       }
       throw new FomulaException();
@@ -214,79 +242,145 @@ public class RegexpSolver {
     throw new FomulaException();
   }
 
-  public String toExpression(Node<Regexp> node, Node<Regexp> target) {
+  /**
+   * 作为行内表达式结点的正则表达式
+   *
+   * @param node
+   * @return
+   */
+  private String toLineExpression(Node<Regexp> node) {
     Regexp regexp = node.getData();
     switch (regexp.getRegexpEnum()) {
       // 正则匹配式逻辑
       case EXPRESSION:
         Expression expression = (Expression) regexp;
         return expression.getRegex();
-      // 捕获组逻辑
-      case CAPTURE:
-        Capture capture = (Capture) node.getData();
-        StringBuffer childStringBuffer = new StringBuffer();
-        for (Node<Regexp> child : node.getChilds()) {
-          String childRegex = toExpression(child, target);
-          childStringBuffer.append(childRegex);
-        }
-        // 捕获组完整正则式
-        String regex = capture.getBunchEnum() == BunchEnum.ELEMENT ? childStringBuffer.toString() : "(" + childStringBuffer + ")+";
-        // 为目标节点命名
-        if (node == target) {
-          regex = "(?<" + capture.getName() + ">" + regex + ")";
-        }
-        return regex;
       case LINE:
-        ExpressionLine expressionLine = (ExpressionLine) regexp;
         StringBuffer lineChildStringBuffer = new StringBuffer();
         for (Node<Regexp> child : node.getChilds()) {
-          String childRegex = toExpression(child, target);
+          String childRegex = toLineExpression(child);
           lineChildStringBuffer.append(childRegex);
         }
         return lineChildStringBuffer.toString();
+      case CAPTURE_BOUND:
+        CaptureBound captureBound = (CaptureBound) regexp;
+        return BoundEnum.OPEN == captureBound.getBoundEnum() ? "(?<" + captureBound.getName() + ">" : ")" + captureBound.getRepeatSuffix();
       default:
         return "";
+    }
+  }
+  // endregion
+
+  // region 重建为匹配式
+
+  /**
+   * 将行内的结点重建为符合该节点的捕获组匹配式
+   *
+   * @param node
+   * @return
+   */
+  public String constructExpression(Node<Formula> node) {
+    return constructExpression(node, node);
+  }
+
+  private String constructExpression(Node<Formula> node, Node<Formula> target) {
+    Formula formula = node.getData();
+    // 正则匹配式逻辑
+    // 末端表达式
+    if (FormulaEnum.EXPRESSION == formula.getFormulaEnum()) {
+      Expression expression = (Expression) formula;
+      return expression.getRegex();
+    }
+    // 行表达式
+    else if (FormulaEnum.LINE == formula.getFormulaEnum()) {
+      StringBuffer childStringBuffer = new StringBuffer();
+      for (Node<Formula> child : node.getChilds()) {
+        String childExpression = constructExpression(child, target);
+        childStringBuffer.append(childExpression);
+      }
+      return childStringBuffer.toString();
+    }
+    // 捕获组
+    else if (FormulaEnum.CAPTURE == formula.getFormulaEnum()) {
+      StringBuffer childStringBuffer = new StringBuffer();
+      for (Node<Formula> child : node.getChilds()) {
+        String childExpression = constructExpression(child, target);
+        childStringBuffer.append(childExpression);
+      }
+      Capture capture = (Capture) formula;
+      // 捕获组完整正则式
+      String regex = capture.getBunchEnum() == BunchEnum.ELEMENT ? childStringBuffer.toString() : "(" + childStringBuffer + ")" + capture.getRepeatSuffix();
+      // 为目标节点下属捕获组命名
+      if (node.getParent() == target) {
+        regex = "(?<" + capture.getName() + ">" + regex + ")";
+      }
+      return regex;
+    } else {
+      return "";
+    }
+  }
+  // endregion
+
+  // region 匹配过程
+
+  public void outerMatch(Node<Formula> self, Node<Solution> destSolution, List<String> materials) {
+    Formula formula = self.getData();
+    // 行外捕获组
+    if (FormulaEnum.CAPTURE == formula.getFormulaEnum()) {
+      Solution solution = new Solution(self.getData());
+      destSolution.setData(solution);
+    }
+    // 行
+    else if (FormulaEnum.LINE == formula.getFormulaEnum()) {
+      String material = materials.remove(0);
+      for (Node<Formula> child : self.getChilds()) {
+        innerMatch(child, destSolution, material);
+      }
+    } else {
+      throw new FomulaException();
+    }
+    // 递归子结点
+    for (Node<Formula> child : self.getChilds()) {
+      Node<Solution> destChild = new Node<Solution>();
+      destChild.setParent(destSolution);
+      destSolution.getChilds().add(destChild);
+      outerMatch(child, destChild, materials);
     }
   }
 
-  public String toExpression(Node<Regexp> node) {
-    Regexp regexp = node.getData();
-    switch (regexp.getRegexpEnum()) {
-      // 正则匹配式逻辑
-      case EXPRESSION:
-        Expression expression = (Expression) regexp;
-        return expression.getRegex();
-      // 捕获组逻辑
-      case CAPTURE:
-        Capture capture = (Capture) node.getData();
-        StringBuffer childStringBuffer = new StringBuffer();
-        for (Node<Regexp> child : node.getChilds()) {
-          String childRegex = toExpression(child);
-          childStringBuffer.append(childRegex);
-        }
-        // 捕获组完整正则式
-        String regex = capture.getBunchEnum() == BunchEnum.ELEMENT ? childStringBuffer.toString() : "(" + childStringBuffer + ")+";
-        // 为目标节点命名
-        regex = "(?<" + capture.getName() + ">" + regex + ")";
-        return regex;
-      case LINE:
-        ExpressionLine expressionLine = (ExpressionLine) regexp;
-        StringBuffer lineChildStringBuffer = new StringBuffer();
-        for (Node<Regexp> child : node.getChilds()) {
-          String childRegex = toExpression(child);
-          lineChildStringBuffer.append(childRegex);
-        }
-        return lineChildStringBuffer.toString();
-      case LINE_BOUND:
-        LineBound lineBound = (LineBound) regexp;
-        return BoundEnum.OPEN == lineBound.getBoundEnum() ? "^" : "$";
-      case CAPTURE_BOUND:
-        CaptureBound captureBound = (CaptureBound) regexp;
-        return BoundEnum.OPEN == captureBound.getBoundEnum() ? "(?<" + captureBound.getName() + ">" : BunchEnum.LIST == captureBound.getBunchEnum() ? ")+" : ")";
-      default:
-        return "";
+  public void innerMatch(Node<Formula> self, Node<Solution> destSolution, String material) {
+    Formula formula = self.getData();
+    // 行内捕获组
+    if (FormulaEnum.CAPTURE == formula.getFormulaEnum()) {
+      String capturesRegex = constructExpression(self.getParent());
+      Matcher capturesMatcher = Pattern.compile(capturesRegex).matcher(material);
+      // 捕获组信息
+      Capture capture = (Capture) formula;
+      int repeatCount = 0;
+      String value = null;
+      while (capturesMatcher.find()) {
+        repeatCount++;
+        value = capturesMatcher.group(capture.getName());
+      }
+      Solution solution = new Solution(self.getData(), value);
+      destSolution.setData(solution);
+      // 递归子结点
+      for (Node<Formula> child : self.getChilds()) {
+        Node<Solution> destChild = new Node<Solution>();
+        destChild.setParent(destSolution);
+        destSolution.getChilds().add(destChild);
+        innerMatch(child, destChild, value);
+      }
     }
+    // 行内表达式
+    else if (FormulaEnum.EXPRESSION == formula.getFormulaEnum()) {
+
+    } else {
+      throw new FomulaException();
+    }
+
   }
+  // endregion
 
 
 }

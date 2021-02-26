@@ -1,8 +1,12 @@
 package com.daniel.util.tester;
 
+import com.daniel.util.fomula.entity.Capture;
 import com.daniel.util.fomula.entity.Expression;
 import com.daniel.util.entity.FileBlock;
+import com.daniel.util.fomula.entity.Formula;
 import com.daniel.util.fomula.entity.Regexp;
+import com.daniel.util.fomula.entity.Solution;
+import com.daniel.util.fomula.operator.FormulaTreeOperator;
 import com.daniel.util.tree.Node;
 import com.daniel.util.tree.TreeOperator;
 import com.daniel.util.util.FileBlockTreeOperator;
@@ -110,11 +114,12 @@ public class FuncTest {
     List<Node<Regexp>> traversal = regexpSolver.splitLine(regex);
     RegexpTreeOperator regexpTreeOperator = new RegexpTreeOperator();
     Node<List<Node<Regexp>>> hierachy = regexpTreeOperator.hierachy(traversal);
-    Node<Regexp> root = new Node<Regexp>(new Expression("root"));
+    Node<Formula> root = new Node<Formula>(new Expression("root"));
     regexpSolver.gather(hierachy, root);
+
     return;
   }
-  
+
   @Test
   public void test7() throws Exception {
     File materialFile = new File("src/main/resources/material/test.txt");
@@ -140,17 +145,28 @@ public class FuncTest {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
+    // 整合为树结构
     RegexpSolver regexpSolver = new RegexpSolver();
-    List<Node<Regexp>> traversal = regexpSolver.split(formulas);
+    List<Node<Regexp>> chips = regexpSolver.split(formulas);
     RegexpTreeOperator regexpTreeOperator = new RegexpTreeOperator();
-    Node<List<Node<Regexp>>> hierachy = regexpTreeOperator.hierachy(traversal);
-    Node<Regexp> root = new Node<Regexp>(new Expression("root"));
+    FormulaTreeOperator formulaTreeOperator = new FormulaTreeOperator();
+    Node<List<Node<Regexp>>> hierachy = regexpTreeOperator.hierachy(chips);
+    Node<Formula> root = new Node<Formula>(new Capture());
     regexpSolver.gather(hierachy, root);
-    
+
+    Node<Solution> solutionRoot = new Node<Solution>(new Solution(new Capture()));
+    regexpSolver.outerMatch(root, solutionRoot, materials);
+
     return;
   }
-  
-  
+
+  @Test
+  public void test8() throws Exception {
+    String str = "123";
+    str.getBytes("cp500");
+    return;
+  }
+
 
 }
