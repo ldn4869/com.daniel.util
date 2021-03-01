@@ -152,10 +152,10 @@ public class FuncTest {
     RegexpTreeOperator regexpTreeOperator = new RegexpTreeOperator();
     FormulaTreeOperator formulaTreeOperator = new FormulaTreeOperator();
     Node<List<Node<Regexp>>> hierachy = regexpTreeOperator.hierachy(chips);
-    Node<Formula> root = new Node<Formula>(new Capture());
+    Node<Formula> root = new Node<Formula>(new Capture("root"));
     regexpSolver.gather(hierachy, root);
 
-    Node<Solution> solutionRoot = new Node<Solution>(new Solution(new Capture()));
+    Node<Solution> solutionRoot = new Node<Solution>(new Solution(root.getData()));
     regexpSolver.outerMatch(root, solutionRoot, materials);
 
     return;

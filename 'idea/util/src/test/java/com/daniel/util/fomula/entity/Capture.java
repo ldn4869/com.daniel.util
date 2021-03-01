@@ -4,6 +4,11 @@ import com.daniel.util.fomula.constant.BunchEnum;
 import com.daniel.util.fomula.constant.CaptureEnum;
 import com.daniel.util.fomula.constant.FormulaEnum;
 
+/**
+ * 捕获组
+ *
+ * 正则捕获组, 可以从材料中提取 name 标识的信息
+ */
 public class Capture implements Formula {
 
   private final FormulaEnum formulaEnum = FormulaEnum.CAPTURE;
@@ -21,9 +26,8 @@ public class Capture implements Formula {
   public Capture() {
   }
 
-  public Capture(String name, BunchEnum bunchEnum) {
+  public Capture(String name) {
     this.name = name;
-    this.bunchEnum = bunchEnum;
   }
 
 

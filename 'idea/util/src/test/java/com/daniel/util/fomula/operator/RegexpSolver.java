@@ -2,7 +2,6 @@ package com.daniel.util.fomula.operator;
 
 import com.daniel.util.fomula.constant.BoundEnum;
 import com.daniel.util.fomula.constant.BunchEnum;
-import com.daniel.util.fomula.constant.CaptureEnum;
 import com.daniel.util.fomula.constant.FormulaEnum;
 import com.daniel.util.fomula.constant.PatternConst;
 import com.daniel.util.fomula.constant.RegexpEnum;
@@ -309,7 +308,11 @@ public class RegexpSolver {
       }
       Capture capture = (Capture) formula;
       // 捕获组完整正则式
-      String regex = capture.getBunchEnum() == BunchEnum.ELEMENT ? childStringBuffer.toString() : "(" + childStringBuffer + ")" + capture.getRepeatSuffix();
+      String regex = childStringBuffer.toString();
+      // 并非匹配目标节点时, 加重复后缀
+      if (node != target) {
+        regex = "(" + regex + ")" + capture.getRepeatSuffix();
+      }
       // 为目标节点下属捕获组命名
       if (node.getParent() == target) {
         regex = "(?<" + capture.getName() + ">" + regex + ")";
@@ -323,62 +326,92 @@ public class RegexpSolver {
 
   // region 匹配过程
 
-  public void outerMatch(Node<Formula> self, Node<Solution> destSolution, List<String> materials) {
-    Formula formula = self.getData();
+  public void outerMatch(Node<Formula> formulaNode, Node<Solution> solutionNode, List<String> materials) {
+    Formula formula = formulaNode.getData();
     // 行外捕获组
     if (FormulaEnum.CAPTURE == formula.getFormulaEnum()) {
-      Solution solution = new Solution(self.getData());
-      destSolution.setData(solution);
+      Solution solution = new Solution(formulaNode.getData());
+      solutionNode.setData(solution);
+      // 递归子结点
+      for (Node<Formula> childFormulaNode : formulaNode.getChilds()) {
+        // 捕获组解决方案即为解决方案本身
+        outerMatch(childFormulaNode, solutionNode, materials);
+      }
     }
     // 行
     else if (FormulaEnum.LINE == formula.getFormulaEnum()) {
       String material = materials.remove(0);
-      for (Node<Formula> child : self.getChilds()) {
-        innerMatch(child, destSolution, material);
+      solutionNode.getData().setMaterial(material);
+      for (Node<Formula> childFormulaNode : formulaNode.getChilds()) {
+        if (FormulaEnum.CAPTURE == childFormulaNode.getData().getFormulaEnum()) {
+          Node<Solution> childSolution = new Node<Solution>(new Solution(childFormulaNode.getData()), solutionNode);
+          solutionNode.getChilds().add(childSolution);
+          innerMatch(childFormulaNode, childSolution);
+        } else {
+          innerMatch(childFormulaNode, solutionNode);
+        }
       }
     } else {
       throw new FomulaException();
     }
-    // 递归子结点
-    for (Node<Formula> child : self.getChilds()) {
-      Node<Solution> destChild = new Node<Solution>();
-      destChild.setParent(destSolution);
-      destSolution.getChilds().add(destChild);
-      outerMatch(child, destChild, materials);
-    }
   }
 
-  public void innerMatch(Node<Formula> self, Node<Solution> destSolution, String material) {
-    Formula formula = self.getData();
+  public void innerMatch(Node<Formula> formulaNode, Node<Solution> solutionNode) {
+    Formula formula = formulaNode.getData();
+    Solution solution = solutionNode.getData();
     // 行内捕获组
     if (FormulaEnum.CAPTURE == formula.getFormulaEnum()) {
-      String capturesRegex = constructExpression(self.getParent());
-      Matcher capturesMatcher = Pattern.compile(capturesRegex).matcher(material);
+      // 为了提取公式结点对应的捕获组信息, 匹配式为 公式结点 在 公式父结点 上的表达式
+      String capturesRegex = constructExpression(formulaNode.getParent());
+      // 材料为 解式父结点 的解式材料
+      Matcher capturesMatcher = Pattern.compile(capturesRegex).matcher(solutionNode.getParent().getData().getMaterial());
       // 捕获组信息
       Capture capture = (Capture) formula;
       int repeatCount = 0;
-      String value = null;
+      String material = null;
+      boolean isListSolution = isListSolution(solutionNode);
+      // 将捕获到的信息作为该捕获组的材料, 用于其子结点的匹配
       while (capturesMatcher.find()) {
         repeatCount++;
-        value = capturesMatcher.group(capture.getName());
+        material = capturesMatcher.group(capture.getName());
       }
-      Solution solution = new Solution(self.getData(), value);
-      destSolution.setData(solution);
+      solution.setMaterial(material);
+      // 如果捕获组是簇捕获组, 对簇材料再次进行多次匹配, 将匹配信息作为其子结点的材料
+      
       // 递归子结点
-      for (Node<Formula> child : self.getChilds()) {
-        Node<Solution> destChild = new Node<Solution>();
-        destChild.setParent(destSolution);
-        destSolution.getChilds().add(destChild);
-        innerMatch(child, destChild, value);
+      for (Node<Formula> childFormulaNode : formulaNode.getChilds()) {
+        // 子结点为捕获组, 新建解式
+        if (FormulaEnum.CAPTURE == childFormulaNode.getData().getFormulaEnum()) {
+          Solution childSolution = new Solution(childFormulaNode.getData());
+          Node<Solution> childSolutionNode = new Node<Solution>(childSolution, solutionNode);
+          solutionNode.getChilds().add(childSolutionNode);
+          innerMatch(childFormulaNode, childSolutionNode);
+        }
+        // 仅仅验证表达式是否正确
+        else {
+          innerMatch(childFormulaNode, solutionNode);
+        }
       }
     }
     // 行内表达式
     else if (FormulaEnum.EXPRESSION == formula.getFormulaEnum()) {
-
+//      // 移去未被捕获的
+//      destSolution.getParent().getChilds().remove(destSolution);
     } else {
       throw new FomulaException();
     }
 
+  }
+
+  /**
+   * 结点是否是父结点解式的逻辑解式组
+   *
+   * @param solutionNode
+   * @return
+   */
+  private boolean isListSolution(Node<Solution> solutionNode) {
+    Formula parentFormula = solutionNode.getParent().getData().getFormula();
+    return FormulaEnum.CAPTURE == parentFormula.getFormulaEnum() && BunchEnum.LIST == ((Capture) parentFormula).getBunchEnum();
   }
   // endregion
 
