@@ -1,5 +1,5 @@
-^(?<name>\w+):(?<tels>\((?<area>\d+)-(?<num>\d+)\),?)+$
-tables:
+^((?<name>\w+):(?<tels>\((?<area>\d+)-(?<num>\d+)\),?)+)$
+tables(:)+
 (?<tables>
 DROP TABLE IF EXISTS `(?<name>\w+)`;
 CREATE TABLE `(?<name>\w+)` \(
@@ -9,7 +9,7 @@ CREATE TABLE `(?<name>\w+)` \(
   PRIMARY KEY \(`(?<primaryKey>\w+)`\)\)
 ENGINE InnoDB DEFAULT CHARACTER SET utf8
 COMMENT '(?<cnName>.+)';
-  (?<null>
+  (
 ^(?<space>\s*)+$
   )+
 )+

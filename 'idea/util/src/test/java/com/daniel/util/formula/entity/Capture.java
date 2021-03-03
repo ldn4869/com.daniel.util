@@ -1,12 +1,12 @@
-package com.daniel.util.fomula.entity;
+package com.daniel.util.formula.entity;
 
-import com.daniel.util.fomula.constant.BunchEnum;
-import com.daniel.util.fomula.constant.CaptureEnum;
-import com.daniel.util.fomula.constant.FormulaEnum;
+import com.daniel.util.formula.constant.BunchEnum;
+import com.daniel.util.formula.constant.FormulaEnum;
+import com.daniel.util.json.PojoUtil;
 
 /**
  * 捕获组
- *
+ * <p>
  * 正则捕获组, 可以从材料中提取 name 标识的信息
  */
 public class Capture implements Formula {
@@ -16,8 +16,6 @@ public class Capture implements Formula {
   private String name;
 
   private BunchEnum bunchEnum;
-
-  private CaptureEnum captureEnum;
 
   private Integer minRepeat = null;
 
@@ -30,6 +28,10 @@ public class Capture implements Formula {
     this.name = name;
   }
 
+  public Capture(String name, BunchEnum bunchEnum) {
+    this.name = name;
+    this.bunchEnum = bunchEnum;
+  }
 
   public String getName() {
     return name;
@@ -67,12 +69,9 @@ public class Capture implements Formula {
     this.maxRepeat = maxRepeat;
   }
 
-  public CaptureEnum getCaptureEnum() {
-    return captureEnum;
-  }
-
-  public void setCaptureEnum(CaptureEnum captureEnum) {
-    this.captureEnum = captureEnum;
+  @Override
+  public Capture clone() {
+    return PojoUtil.copy(this, Capture.class);
   }
 
   public String getRepeatSuffix() {

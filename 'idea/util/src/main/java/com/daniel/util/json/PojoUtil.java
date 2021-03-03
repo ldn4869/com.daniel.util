@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class PojoUtil {
 
-  // region ################################ 解析: 基础方法 ################################
+  // region 解析: 基础方法
   
   
   /**
@@ -37,7 +37,7 @@ public class PojoUtil {
     }
     return fieldProp;
   }
-  // * ################################ getProps ################################ */
+  // * getProps */
   
   /**
    * 获取 props 方法, 滤去相应修饰符字段
@@ -196,7 +196,7 @@ public class PojoUtil {
   
   // endregion
   
-  // region ################################ 切割: 按列选取 ################################
+  // region 切割: 按列选取
 
   public static <R> List<R> getFields(List<?> pojos, String fieldName) {
     // 空数组
@@ -235,7 +235,7 @@ public class PojoUtil {
   
   // endregion
   
-  // region ################################ 构建/映射: 对象与 Map 的转换 ################################
+  // region 构建/映射: 对象与 Map 的转换
   
   /**
    * 解析 map 到对象 (提供 props 以提高效率)
@@ -373,7 +373,7 @@ public class PojoUtil {
   
   // endregion
   
-  // region ################################ 转换: 不同对象间的字段复制  ################################
+  // region 转换: 不同对象间的字段复制
   
   /**
    * 將 source 中的字段复制到 target, 提供属性字段

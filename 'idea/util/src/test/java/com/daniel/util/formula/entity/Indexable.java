@@ -1,4 +1,4 @@
-package com.daniel.util.fomula.entity;
+package com.daniel.util.formula.entity;
 
 public interface Indexable {
 

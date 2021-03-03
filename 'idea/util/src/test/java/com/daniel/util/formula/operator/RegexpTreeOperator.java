@@ -1,15 +1,13 @@
-package com.daniel.util.fomula.operator;
+package com.daniel.util.formula.operator;
 
-import com.daniel.util.fomula.constant.BoundEnum;
-import com.daniel.util.fomula.entity.CaptureBound;
-import com.daniel.util.fomula.entity.LineBound;
-import com.daniel.util.fomula.entity.Regexp;
-import com.daniel.util.fomula.constant.RegexpEnum;
+import com.daniel.util.formula.constant.BoundEnum;
+import com.daniel.util.formula.entity.CaptureBound;
+import com.daniel.util.formula.entity.LineBound;
+import com.daniel.util.formula.entity.Regexp;
+import com.daniel.util.formula.constant.RegexpEnum;
 import com.daniel.util.tree.Node;
 import com.daniel.util.tree.TreeConstructor;
 import com.daniel.util.tree.TreeOperator;
-
-import java.util.List;
 
 public final class RegexpTreeOperator extends TreeOperator<Regexp> {
 

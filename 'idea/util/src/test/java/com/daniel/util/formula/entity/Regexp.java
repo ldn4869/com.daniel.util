@@ -1,6 +1,6 @@
-package com.daniel.util.fomula.entity;
+package com.daniel.util.formula.entity;
 
-import com.daniel.util.fomula.constant.RegexpEnum;
+import com.daniel.util.formula.constant.RegexpEnum;
 
 /**
  * 正则式

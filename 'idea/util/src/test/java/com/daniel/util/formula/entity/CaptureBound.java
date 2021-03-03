@@ -1,8 +1,8 @@
-package com.daniel.util.fomula.entity;
+package com.daniel.util.formula.entity;
 
-import com.daniel.util.fomula.constant.BoundEnum;
-import com.daniel.util.fomula.constant.BunchEnum;
-import com.daniel.util.fomula.constant.RegexpEnum;
+import com.daniel.util.formula.constant.BoundEnum;
+import com.daniel.util.formula.constant.BunchEnum;
+import com.daniel.util.formula.constant.RegexpEnum;
 
 public class CaptureBound implements Regexp, Indexable {
 

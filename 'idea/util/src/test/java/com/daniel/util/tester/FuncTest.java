@@ -1,17 +1,19 @@
 package com.daniel.util.tester;
 
-import com.daniel.util.fomula.entity.Capture;
-import com.daniel.util.fomula.entity.Expression;
+import com.daniel.util.formula.constant.BunchEnum;
+import com.daniel.util.formula.entity.Capture;
+import com.daniel.util.formula.entity.Expression;
 import com.daniel.util.entity.FileBlock;
-import com.daniel.util.fomula.entity.Formula;
-import com.daniel.util.fomula.entity.Regexp;
-import com.daniel.util.fomula.entity.Solution;
-import com.daniel.util.fomula.operator.FormulaTreeOperator;
+import com.daniel.util.formula.entity.Formula;
+import com.daniel.util.formula.entity.Regexp;
+import com.daniel.util.formula.entity.Solution;
+import com.daniel.util.formula.operator.FormulaTreeOperator;
+import com.daniel.util.json.PojoUtil;
 import com.daniel.util.tree.Node;
 import com.daniel.util.tree.TreeOperator;
 import com.daniel.util.util.FileBlockTreeOperator;
-import com.daniel.util.fomula.operator.RegexpSolver;
-import com.daniel.util.fomula.operator.RegexpTreeOperator;
+import com.daniel.util.formula.operator.RegexpSolver;
+import com.daniel.util.formula.operator.RegexpTreeOperator;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -23,7 +25,9 @@ import java.math.BigInteger;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class FuncTest {
@@ -152,19 +156,27 @@ public class FuncTest {
     RegexpTreeOperator regexpTreeOperator = new RegexpTreeOperator();
     FormulaTreeOperator formulaTreeOperator = new FormulaTreeOperator();
     Node<List<Node<Regexp>>> hierachy = regexpTreeOperator.hierachy(chips);
-    Node<Formula> root = new Node<Formula>(new Capture("root"));
-    regexpSolver.gather(hierachy, root);
-
-    Node<Solution> solutionRoot = new Node<Solution>(new Solution(root.getData()));
-    regexpSolver.outerMatch(root, solutionRoot, materials);
-
+    Node<Formula> formulaNode = new Node<Formula>(new Capture("root", BunchEnum.ELEMENT));
+    regexpSolver.gather(hierachy, formulaNode);
+    regexpSolver.removeNullCapture(formulaNode);
+//    Node<Solution> solutionNode = regexpSolver.constructSolution(root);
+    Node<Solution> solutionRoot = new Node<Solution>(new Solution(formulaNode.getData()));
+    regexpSolver.setMaterials(materials);
+    regexpSolver.outerMatch(formulaNode, solutionRoot, BunchEnum.NONE);
+    Map<String, Object> map = new HashMap<String, Object>();
+    regexpSolver.toMap(solutionRoot, map);
     return;
   }
 
   @Test
   public void test8() throws Exception {
-    String str = "123";
-    str.getBytes("cp500");
+    Capture capture = new Capture();
+    capture.setName("capture");
+    capture.setBunchEnum(BunchEnum.NONE);
+    capture.setMinRepeat(null);
+    capture.setMaxRepeat(256);
+    Capture c2 = PojoUtil.copy(capture, Capture.class);
+    c2.setMaxRepeat(257);
     return;
   }
 

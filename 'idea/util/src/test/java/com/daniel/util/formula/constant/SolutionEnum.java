@@ -1,4 +1,4 @@
-package com.daniel.util.fomula.constant;
+package com.daniel.util.formula.constant;
 
 public enum SolutionEnum {
   MID,

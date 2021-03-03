@@ -1,9 +1,10 @@
-package com.daniel.util.fomula.entity;
+package com.daniel.util.formula.entity;
 
-import com.daniel.util.fomula.constant.BoundEnum;
-import com.daniel.util.fomula.constant.BunchEnum;
-import com.daniel.util.fomula.constant.FormulaEnum;
-import com.daniel.util.fomula.constant.RegexpEnum;
+import com.daniel.util.formula.constant.BoundEnum;
+import com.daniel.util.formula.constant.BunchEnum;
+import com.daniel.util.formula.constant.FormulaEnum;
+import com.daniel.util.formula.constant.RegexpEnum;
+import com.daniel.util.json.PojoUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public class Expression implements Regexp, Indexable, Formula {
@@ -23,6 +24,10 @@ public class Expression implements Regexp, Indexable, Formula {
   private int start;
 
   private int end;
+
+  public Expression() {
+
+  }
   
   public Expression(String regex) {
     this.regex = regex;
@@ -85,6 +90,11 @@ public class Expression implements Regexp, Indexable, Formula {
 
   public void setEnd(int end) {
     this.end = end;
+  }
+
+  @Override
+  public Expression clone() {
+    return PojoUtil.copy(this, Expression.class);
   }
 
   @Override

@@ -139,8 +139,7 @@ abstract public class TreeOperator<D> {
     }
     return root;
   }
-  
-  
+
   
   // endregion
   
